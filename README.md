@@ -18,17 +18,17 @@ Run the following in the command prompt to install all the packages:
 
 Run the following to set up the environment for flask:  
 For Linux:  
-`export FLASK_APP=run.py`  
+`export FLASK_APP=app`  
 `export FLASK_ENV=development`  
 `export FLASK_DEBUG=1`
 
 For Windows CMD:  
-`set FLASK_APP=run.py`  
+`set FLASK_APP=app`  
 `set FLASK_ENV=development`  
 `set FLASK_DEBUG=1`
 
 For Windows Powershell:  
-`$env:FLASK_APP=run.py`  
+`$env:FLASK_APP=app`  
 `$env:FLASK_ENV=development`  
 `$env:FLASK_DEBUG=1`
 
