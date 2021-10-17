@@ -1,5 +1,5 @@
 # Flask API
-Flask restfull API for a vaccine webservice
+Flask restful API for a vaccine webservice
 
 ## Requirements
 Install python from https://www.python.org/
