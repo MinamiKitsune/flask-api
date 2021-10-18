@@ -35,3 +35,12 @@ For Windows Powershell:
 ## Running the API
 Execute the following to run the application:  
 `flask run`
+
+## Useful resources
+### Documentation
+[Flask RESTful documentation](https://flask-restful.readthedocs.io/en/latest/index.html)  
+[Flask documentation](https://flask.palletsprojects.com/en/2.0.x/)  
+[HTTP status codes](https://www.restapitutorial.com/httpstatuscodes.html)  
+
+### Youtube videos
+[Python REST API Tutorial - Building a Flask REST API](https://www.youtube.com/watch?v=GMppyAPbLYk)
