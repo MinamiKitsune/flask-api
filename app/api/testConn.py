@@ -6,4 +6,5 @@ class TestConnection(Resource):
     def get(self):
         return {"response" : "successful"}, 200
 
+# Add the resources to the API
 test_api.add_resource(TestConnection, '/')
