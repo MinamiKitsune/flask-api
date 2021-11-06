@@ -38,21 +38,21 @@ def main():
                                 );"""
     
     sql_create_vaccine_table = """CREATE TABLE IF NOT EXISTS vaccine (
-                                    id_vaccine INT PRIMARY KEY,
+                                    id_vaccine INTEGER PRIMARY KEY,
                                     vaccine_name TEXT NOT NULL,
                                     target_disease TEXT NOT NULL,
-                                    number_to_administer INT NOT NULL,
-                                    dosage_interval INT
+                                    number_to_administer INTEGER NOT NULL,
+                                    dosage_interval INTEGER
                                 );"""
 
-    sql_create_vile_table = """CREATE TABLE IF NOT EXISTS vile (
-                                    id_vile TEXT PRIMARY KEY,
-                                    vaccine_id INT NOT NULL,
+    sql_create_vial_table = """CREATE TABLE IF NOT EXISTS vial (
+                                    id_vial TEXT PRIMARY KEY,
+                                    vaccine_id INTEGER NOT NULL,
                                     FOREIGN KEY (vaccine_id) REFERENCES vaccine (id_vaccine)
                                 );"""
 
     sql_create_location_table = """CREATE TABLE IF NOT EXISTS location (
-                                    id_location INT PRIMARY KEY,
+                                    id_location INTEGER PRIMARY KEY,
                                     address TEXT NOT NULL,
                                     country TEXT NOT NULL,
                                     zip_code TEXT NOT NULL,
@@ -62,14 +62,14 @@ def main():
     sql_create_vaccination_table = """CREATE TABLE IF NOT EXISTS vaccination (
                                     id_vaccination TEXT PRIMARY KEY,
                                     citizen_id TEXT NOT NULL,
-                                    vile_id TEXT NOT NULL,
-                                    location_id INT NOT NULL,
+                                    vial_id TEXT NOT NULL,
+                                    location_id INTEGER NOT NULL,
                                     date_of_vaccination TEXT NOT NULL,
-                                    dosage_number INT NOT NULL,
-                                    side_effects INT NOT NULL,
+                                    dosage_number INTEGER NOT NULL,
+                                    side_effects INTEGER NOT NULL,
                                     description_side_effects TEXT,
                                     FOREIGN KEY (citizen_id) REFERENCES citizen (id_citizen),
-                                    FOREIGN KEY (vile_id) REFERENCES vile (id_vile),
+                                    FOREIGN KEY (vial_id) REFERENCES vial (id_vial),
                                     FOREIGN KEY (location_id) REFERENCES location (id_location)
                                 );"""
 
@@ -81,11 +81,11 @@ def main():
         # create tables
         create_table(conn, sql_create_citizen_table)
         create_table(conn, sql_create_vaccine_table)
-        create_table(conn, sql_create_vile_table)
+        create_table(conn, sql_create_vial_table)
         create_table(conn, sql_create_location_table)
         create_table(conn, sql_create_vaccination_table)
     else:
-        print("Error")
+        prINTEGER("Error")
 
 
 if __name__ == '__main__':
