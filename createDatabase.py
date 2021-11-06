@@ -54,6 +54,8 @@ def main():
     sql_create_location_table = """CREATE TABLE IF NOT EXISTS location (
                                     id_location INT PRIMARY KEY,
                                     address TEXT NOT NULL,
+                                    country TEXT NOT NULL,
+                                    zip_code TEXT NOT NULL,
                                     name_of_place TEXT NOT NULL
                                 );"""
 
