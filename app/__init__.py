@@ -1,8 +1,15 @@
 from flask import Flask, Blueprint
+from flask_sqlalchemy import SQLAlchemy
+db = None
 
 def create_app():
     # Create the flask application
     app = Flask(__name__)
+
+    # Database
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///vaccine.db'
+    global db
+    db = SQLAlchemy(app)
 
     # Import all of the blueprints
     from .api import test_BP
