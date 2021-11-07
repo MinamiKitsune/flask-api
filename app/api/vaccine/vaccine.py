@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from . import vaccine_api
 from ..databaseModels import Vaccine
+from .. import dataHandler
 from app import db
 
 
@@ -43,49 +44,49 @@ class VaccineResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
         args = vaccine_get_args.parse_args()
-        cleanData(args)
-        if checkIfEmpty(args):
-            return getAllFromDatabase(), 200
+        dataHandler.cleanData(args)
+        if dataHandler.checkIfEmpty(args):
+            return getAllVaccine(), 200
         else:
-            return getFromDatabase(args), 200
+            return getVaccine(args), 200
     
     def put(self):
         args = vaccine_put_args.parse_args()
-        cleanData(args)
+        dataHandler.cleanData(args)
         if args["number_to_administer"] > 1 and args["dosage_interval"] == None:
             abort(400, message="A number of dosages greater than 1 is specified with no dosage interval, please add a dosage interval")
         else:
-            addToDatabase(args)
+            addVaccine(args)
         return { "message": "Added to database" }, 201
     
     def patch(self):
         args = vaccine_patch_args.parse_args()
-        cleanData(args)
-        updateDatabase(args)
-        return { "message": "Updated the database" },200
+        dataHandler.cleanData(args)
+        updateVaccine(args)
+        return { "message": "Updated the database" }, 200
     
     def delete(self):
         args = vaccine_patch_args.parse_args()
-        deleteFromDatabase(args)
-        return { "message": "Deleted from database" },204
+        deleteVaccine(args)
+        return { "message": "Deleted from database" }, 204
 
 
 # Add the resource to the API
 vaccine_api.add_resource(VaccineResource, '')
 
 # Add vaccine to database
-def addToDatabase(args):
+def addVaccine(args):
     new_vaccine = Vaccine(vaccine_name = args["vaccine_name"], target_disease = args["target_disease"], number_to_administer = args["number_to_administer"],
     dosage_interval = args["dosage_interval"])
     db.session.add(new_vaccine)
     db.session.commit()
 
 # Get all of the vaccines from the database
-def getAllFromDatabase():
+def getAllVaccine():
     return Vaccine.query.all()
 
 # Get a specific vaccine or set of vaccines from database
-def getFromDatabase(args):
+def getVaccine(args):
     if args["id_vaccine"]:
         result = Vaccine.query.filter_by(id_vaccine=args["id_vaccine"]).first()
         if result:
@@ -108,7 +109,7 @@ def getFromDatabase(args):
         abort(400, message="Not the correct arguments specified; only id_vaccine, vaccine_name or target_disease can be used")
 
 # update the database
-def updateDatabase(args):
+def updateVaccine(args):
     result = Vaccine.query.filter_by(id_vaccine=args["id_vaccine"]).first()
     if not result:
         abort(404, message="Vaccine with this ID does not exist, cannot update")
@@ -124,25 +125,10 @@ def updateDatabase(args):
         db.session.commit()
 
 # delete from the database
-def deleteFromDatabase(args):
+def deleteVaccine(args):
     result = Vaccine.query.filter_by(id_vaccine=args["id_vaccine"]).first()
     if not result:
         abort(404, message="Vaccine with this ID does not exist, cannot delete")
     else:
         db.session.delete(result)
         db.session.commit()
-    
-
-# Check if the arguments are empty
-def checkIfEmpty(args):
-    for x in args:
-        if args[x] is not None:
-            print(args[x])
-            return False
-    return True
-
-# Removes whitespaces and lowercases the arguments from clients
-def cleanData(args):
-    for x in args:
-        if isinstance(args[x], str):
-            args[x] = str(args[x]).lower().strip()
