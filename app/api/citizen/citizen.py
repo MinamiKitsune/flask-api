@@ -1,40 +1,24 @@
-from flask import Flask
-from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
-from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Resource, reqparse, abort, fields, marshal_with
+from . import citizen_api
+from ..databaseModels import Citizen
+from .. import dataHandler
+from app import db
 
-app = Flask(__name__)
-api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vaccine.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-#Citizen table model
-class CitizenModel(db.Model):
-   id_citizen = db.Column(db.Integer, primary_key=True)
-   email = db.Column(db.String(50), nullable=False)
-   name = db.Column(db.String(30), nullable=False)
-   surname = db.Column(db.String(30), nullable=False)
-   date_of_birth = db.Column(db.String, nullable=False)
-   mobile_num = db.Column(db.String(10), nullable=False)
-   medical_aid = db.Column(db.String(20), nullable=True)
-   address = db.Column(db.String(45), nullable=False )
-   parent_id = db.Column(db.Integer, nullable=True)
-
+# TODO redo most of this to allow for better integration
 #Parser to check that required arguments are sent
-citizenPostArgs = reqparse.RequestParser()
-citizenPostArgs.add_argument("email", type=str, help="Email is required", required=True)
-citizenPostArgs.add_argument("name", type=str, help="Name is required", required=True)
-citizenPostArgs.add_argument("surname", type=str, help="Surname is required", required=True)
-citizenPostArgs.add_argument("date_of_birth", type=str, help="Date of birth is required", required=True)
-citizenPostArgs.add_argument("mobile_num", type=str, help="Mobile number is required", required=True)
-citizenPostArgs.add_argument("medical_aid", type=str, required=False)
-citizenPostArgs.add_argument("address", type=str, help="Address is required", required=True)
-citizenPostArgs.add_argument("parent_id", type=int, required=False)
+citizen_post_args = reqparse.RequestParser()
+citizen_post_args.add_argument("email", type=str, help="Email is required", required=True)
+citizen_post_args.add_argument("name", type=str, help="Name is required", required=True)
+citizen_post_args.add_argument("surname", type=str, help="Surname is required", required=True)
+citizen_post_args.add_argument("date_of_birth", type=str, help="Date of birth is required", required=True)
+citizen_post_args.add_argument("mobile_num", type=str, help="Mobile number is required", required=True)
+citizen_post_args.add_argument("medical_aid", type=str, required=False)
+citizen_post_args.add_argument("address", type=str, help="Address is required", required=True)
+citizen_post_args.add_argument("parent_id", type=int, required=False)
 
 #Parser to check that required arguments are sent to update
-citizenPutArgs = reqparse.RequestParser()
-citizenPutArgs.add_argument("medical_aid", type=str)
+citizen_put_args = reqparse.RequestParser()
+citizen_put_args.add_argument("medical_aid", type=str)
 
 #Fields to marshal the responses
 resource_fields = {
@@ -46,14 +30,10 @@ resource_fields = {
         'medical_aid': fields.String,
         'address': fields.String,
         'parent_id': fields.Integer,
-} 
-
-#Function to send sms notification 
-def SMS(): 
-    print("An sms will be sent to you shortly...")
+}
 
 #Class to handle methods related to citizens
-class Citizen(Resource):
+class CitizenResource(Resource):
     #Function to retrieve existing citizen
     @marshal_with(resource_fields)
     def get(self, citizen_id):
@@ -66,7 +46,7 @@ class Citizen(Resource):
     #Function to create new citizen     
     @marshal_with(resource_fields)
     def post(self, citizen_id):
-        args = citizenPostArgs.parse_args()
+        args = citizen_post_args.parse_args()
         citizen = CitizenModel.query.filter_by(id_citizen=citizen_id).first()
 
         if citizen:
@@ -95,7 +75,7 @@ class Citizen(Resource):
     #Function to update citizen medical aid 
     @marshal_with(resource_fields)
     def put(self, citizen_id):
-        args = citizenPutArgs.parse_args()
+        args = citizen_put_args.parse_args()
         citizen = CitizenModel.query.filter_by(id_citizen=citizen_id).first()
     
         if not citizen:
@@ -128,9 +108,10 @@ class CitizensList(Resource):
 
 #add resource to the API
 #dependent resource
-api.add_resource(Citizen, "/citizens/<int:citizen_id>")
+citizen_api.add_resource(CitizenResource, "/citizens/<int:citizen_id>")
 #dependent list resource
-api.add_resource(CitizensList, "/citizens")  
+citizen_api.add_resource(CitizensList, "/citizens")  
 
-if __name__ == "__main__":
-    app.run(debug=True)        
+#Function to send sms notification 
+def SMS(): 
+    print("An sms will be sent to you shortly...")  

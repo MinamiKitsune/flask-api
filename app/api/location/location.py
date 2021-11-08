@@ -1,22 +1,15 @@
-from flask import Flask
-from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
-from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Resource, reqparse, abort, fields, marshal_with
+from . import location_api
+from ..databaseModels import Location
+from .. import dataHandler
+from app import db
 
-app = Flask(__name__)
-api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vaccine.db'
-db = SQLAlchemy(app)
 
-#Location table model
-class LocationModel(db.Model):
-    id_location = db.Column(db.Integer, primary_key=True)
-    address = db.Column(db.String(45), nullable=False)
-    name_of_place = db.Column(db.String(45), nullable=False)
-
+# TODO redo most of this to allow for better integration
 #Parser to check that required arguments are sent
-locationPostArgs = reqparse.RequestParser()
-locationPostArgs.add_argument("address", type=str, help="Address is required", required=True)
-locationPostArgs.add_argument("name_of_place", type=str, help="Name of place is required", required=True)
+location_post_args = reqparse.RequestParser()
+location_post_args.add_argument("address", type=str, help="Address is required", required=True)
+location_post_args.add_argument("name_of_place", type=str, help="Name of place is required", required=True)
 
 #Fields to marshal the responses
 resource_fields = {
@@ -26,7 +19,7 @@ resource_fields = {
 }
 
 #Class to handle methods related to location
-class Location(Resource):
+class LocationResource(Resource):
     #Function to retrieve existing location
     @marshal_with(resource_fields)
     def get(self, location_id):
@@ -39,7 +32,7 @@ class Location(Resource):
     #Function to retrieve existing location
     @marshal_with(resource_fields)
     def post(self, location_id): 
-        args = locationPostArgs.parse_args()
+        args = location_post_args.parse_args()
         location = LocationModel.query.filter_by(id_location = location_id).first()
         
         if location:
@@ -73,9 +66,6 @@ class LocationList(Resource):
 
 #add resource to the API
 #location resource
-api.add_resource(Location, '/locations/<string:location_id>')
+location_api.add_resource(LocationResource, '/locations/<string:location_id>')
 #location list resource
-api.add_resource(LocationList, '/locations')  
-
-if __name__ == "__main__":
-    app.run(debug=True)        
+location_api.add_resource(LocationList, '/locations')
