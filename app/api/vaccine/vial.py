@@ -37,18 +37,18 @@ class VialResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
         args = vial_get_args.parse_args()
-        dataHandler.cleanData(args)
+        dataHandler.removeSpace(args)
         getVile(args)
     
     def put(self):
         args = vial_put_args.parse_args()
-        dataHandler.cleanData(args)
+        dataHandler.removeSpace(args)
         addVile(args)
         return { "message": "Added to database" }, 201
     
     def patch(self):
         args = vial_patch_args.parse_args()
-        dataHandler.cleanData(args)
+        dataHandler.removeSpace(args)
         updateVile(args)
         return { "message": "Updated the database" }, 200
     
