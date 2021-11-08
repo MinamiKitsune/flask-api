@@ -11,3 +11,15 @@ def cleanData(args):
     for x in args:
         if isinstance(args[x], str):
             args[x] = str(args[x]).lower().strip()
+
+# Removes whitespaces from the arguments provided by the clients
+def removeSpace(args):
+    for x in args:
+        if isinstance(args[x], str):
+            args[x] = str(args[x]).strip()
+
+# Lowercases the arguments from clients
+def removeUpper(args):
+    for x in args:
+        if isinstance(args[x], str):
+            args[x] = str(args[x]).lower()
