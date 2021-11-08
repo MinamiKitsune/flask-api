@@ -12,12 +12,19 @@ class Vial(db.Model):
     vaccine_id = db.Column(db.Integer, db.ForeignKey('vaccine.id_vaccine'), nullable = False)
 
 class Citizen(db.Model):
-   id_citizen = db.Column(db.Text, primary_key=True)
-   email = db.Column(db.Text, nullable=False)
-   name = db.Column(db.Text, nullable=False)
-   surname = db.Column(db.Text, nullable=False)
-   date_of_birth = db.Column(db.Date, nullable=False)
-   mobile_num = db.Column(db.Text, nullable=False)
-   medical_aid = db.Column(db.Text, nullable=True)
-   address = db.Column(db.Text, nullable=False )
-   parent_id = db.Column(db.Integer, db.ForeignKey('citizen.id_citizen'), nullable = True)
+    id_citizen = db.Column(db.Text, primary_key=True)
+    email = db.Column(db.Text, nullable=False)
+    name = db.Column(db.Text, nullable=False)
+    surname = db.Column(db.Text, nullable=False)
+    date_of_birth = db.Column(db.Date, nullable=False)
+    mobile_num = db.Column(db.Text, nullable=False)
+    medical_aid = db.Column(db.Text, nullable=True)
+    address = db.Column(db.Text, nullable=False )
+    parent_id = db.Column(db.Integer, db.ForeignKey('citizen.id_citizen'), nullable = True)
+
+class Location(db.Model):
+    id_location = db.Column(db.Integer, primary_key=True)
+    address = db.Column(db.Text, nullable=False)
+    country = db.Column(db.Text, nullable=False)
+    zip_code = db.Column(db.Text, nullable=False)
+    name_of_place = db.Column(db.Text, nullable=False)
