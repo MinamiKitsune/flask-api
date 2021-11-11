@@ -94,13 +94,15 @@ def getVaccine(args):
         else:
             abort(404, message="Vaccine with this ID does not exist")
     elif args["vaccine_name"]:
-        result = Vaccine.query.filter_by(vaccine_name=args["vaccine_name"]).all()
+        search = "%{}%".format(args["vaccine_name"])
+        result = Vaccine.query.filter(Vaccine.vaccine_name.like(search)).all()
         if result:
             return result
         else:
             abort(404, message="Vaccine with this name does not exist")
     elif args["target_disease"]:
-        result = Vaccine.query.filter_by(target_disease=args["target_disease"]).all()
+        search = "%{}%".format(args["target_disease"])
+        result = Vaccine.query.filter(Vaccine.target_disease.like(search)).all()
         if result:
             return result
         else:
