@@ -7,7 +7,7 @@ Install python from https://www.python.org/
 ## Create the database
 Open a terminal or command prompt and run the 'createDatabase.py' file to create the sqlite database
 
-## How to set up the virtual environment for testing (This only needs to be done once)
+## How to set up the virtual environment for testing
 Open a terminal or command prompt in the location of the application.
 
 Paste the following in the command prompt:  
