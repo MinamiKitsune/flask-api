@@ -1,136 +1,147 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
+from datetime import datetime
 from . import dependant_api
 from ..databaseModels import Citizen
-from .. import dataHandler
+from .. import dataHandler, smsHandler
 from app import db
 
-# TODO redo most of this to allow for better integration
-#Parser to check that required arguments are sent
-dependant_post_args = reqparse.RequestParser()
-dependant_post_args.add_argument("email", type=str, help="Email is required", required=True)
-dependant_post_args.add_argument("name", type=str, help="Name is required" , required=True)
-dependant_post_args.add_argument("surname", type=str, help="Surname is required", required=True)
-dependant_post_args.add_argument("date_of_birth", type=str, help="Date of birth is required", required=True)
-dependant_post_args.add_argument("mobile_num", type=str, help="Mobile number is required", required=True)
-dependant_post_args.add_argument("medical_aid", type=str, required=False)
-dependant_post_args.add_argument("address", type=str, help="Address is required", required=True)
-dependant_post_args.add_argument("parent_id", type=int, help="Parent ID is required", required=True)
 
-#Parser to check that required arguments are sent to update
+# Parser to check that required arguments are sent to add dependant
 dependant_put_args = reqparse.RequestParser()
-dependant_put_args.add_argument("email", type=str)
-dependant_put_args.add_argument("mobile_num", type=str)
-dependant_put_args.add_argument("medical_aid", type=str)
-dependant_put_args.add_argument("address", type=str)
+dependant_put_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
+dependant_put_args.add_argument("email", type=str, help="Email is required in string format", required=True)
+dependant_put_args.add_argument("name", type=str, help="Name is required in string format", required=True)
+dependant_put_args.add_argument("surname", type=str, help="Surname is required in string format", required=True)
+dependant_put_args.add_argument("date_of_birth", type=str, help="Date of birth is required in the format YYYY-MM-DD", required=True)
+dependant_put_args.add_argument("mobile_num", type=str, help="Mobile number is required in string format", required=True)
+dependant_put_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
+dependant_put_args.add_argument("citizen_address", type=str, help="Address is required in string format")
+dependant_put_args.add_argument("parent_id", type=str, help="The ID of the parent in string format", required=True)
 
-#Fields to marshal the responses
+# Parser to check that required arguments are sent to get a dependant
+dependant_get_args = reqparse.RequestParser()
+dependant_get_args.add_argument("parent_id", type=str, help="The ID of the parent in string format", required=True)
+
+# Parser to check that required arguments are sent to update a dependant
+dependant_patch_args = reqparse.RequestParser()
+dependant_patch_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
+dependant_patch_args.add_argument("email", type=str, help="Email is required in string format")
+dependant_patch_args.add_argument("name", type=str, help="Name is required in string format")
+dependant_patch_args.add_argument("surname", type=str, help="Surname is required in string format")
+dependant_patch_args.add_argument("date_of_birth", type=str, help="Date of birth is required in the format YYYY-MM-DD")
+dependant_patch_args.add_argument("mobile_num", type=str, help="Mobile number is required in string format")
+dependant_patch_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
+dependant_patch_args.add_argument("citizen_address", type=str, help="Address is required in string format")
+dependant_patch_args.add_argument("parent_id", type=str, help="The ID of the parent in string format")
+
+# Parser to check that required arguments are sent to delete a citizen
+dependant_del_args = reqparse.RequestParser()
+dependant_del_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
+
+# Fields to marshal the responses
 resource_fields = {
-        'id_citizen': fields.Integer,
-        'email': fields.String,
-        'name': fields.String,
-        'surname': fields.String,
-        'date_of_birth': fields.String,
-        'medical_aid': fields.String,
-        'address': fields.String,
-        'parent_id': fields.Integer,
+    'id_citizen': fields.String,
+    'email': fields.String,
+    'name': fields.String,
+    'surname': fields.String,
+    'date_of_birth': fields.String,
+    'mobile_num': fields.String,
+    'medical_aid': fields.String,
+    'citizen_address': fields.String,
+    'parent_id': fields.String
 }
 
 #Class to handle methods related to dependants
 class DependantResource(Resource):
-    #Function to retrieve existing dependant
     @marshal_with(resource_fields)
-    def get(self, dependant_id):
-        dependant = CitizenModel.query.filter_by(id_citizen=dependant_id).first()
-        
-        if not dependant:
-            abort(404, message = "dependant with this ID does not exist")
-            
-        return dependant
-
-    #Function to create new dependant
-    @marshal_with(resource_fields)
-    def post(self, dependant_id):
-        args = dependant_post_args.parse_args()
-        dependant = CitizenModel.query.filter_by(id_citizen=dependant_id).first()
-        
-        if dependant:
-            abort(409, message="dependant ID already exists, cannot add")
-        try:
-            dependantInfo = CitizenModel(
-                                id_citizen=dependant_id,
-                                email=args["email"],
-                                name=args["name"],
-                                surname=args["surname"],
-                                date_of_birth=args["date_of_birth"],
-                                mobile_num=args["mobile_num"],
-                                medical_aid=args["medical_aid"],
-                                address=args["address"],
-                                parent_id=args["parent_id"]
-                            )
-            db.session.add(dependantInfo)
-            db.session.commit()
-            SMS()
-            return {"message":"dependant added to database"}, 201
-
-        except Exception as e:
-            return 400
-
-    #Function to update certain dependant
-    @marshal_with(resource_fields)
-    def put(self, dependant_id):
-        args = dependant_put_args.parse_args() 
-        dependant = CitizenModel.query.filter_by(id_citizen = dependant_id).first()
-           
-        if not dependant:
-            abort(404, message = "dependant with this ID does not exist, cannot update")
-        
-        if args['email']:
-            dependant.email = args['email']
-        if args['mobile_num']:
-            dependant.mobile_num = args['mobile_num']
-        if args['medical_aid']:
-            dependant.medical_aid = args['medical_aid']
-        if args['address']:
-            dependant.address = args['address']
-        
-        db.session.commit()
-
-        return {"message":"dependant updated"}, 200
-    
-    #Function to delete dependant
-    def delete(self, dependant_id):
-        dependant = CitizenModel.query.filter_by(id_citizen = dependant_id).first()
-        if not dependant:
-            abort(404, message="dependant with this ID does not exist, cannot delete")
-        db.session.delete(dependant)
-        db.session.commit()
-
-        return {"message":"dependant deleted from database"}, 204
-
-# TODO move this above
-class DependantList(Resource):
-    #Fuction to retrieve all dependants
     def get(self):
-        dependant = CitizenModel.query.all()
-        dependantList = {}
+        args = dependant_get_args.parse_args()
+        dataHandler.cleanData(args)
+        return getDependant(args), 200
 
-        for user in dependant:
-            dependantList[user.id_citizen] = {"email":user.email,
-                                                "name":user.name,
-                                                "surname":user.surname,
-                                                "date_of_birth":user.date_of_birth,
-                                                "mobile_num":user.mobile_num,
-                                                "medical_aid":user.medical_aid,
-                                                "address":user.address,
-                                                "parent_id":user.parent_id}
-        return dependantList
+    def put(self):
+        args = dependant_put_args.parse_args()
+        dataHandler.cleanData(args)
+        addDependant(args)
+        return { "message": "Added to database" }, 201
+    
+    def patch(self):
+        args = dependant_patch_args.parse_args()
+        dataHandler.cleanData(args)
+        updateDependant(args)
+        return { "message": "Updated the database" }, 200
+    
+    def delete(self):
+        args = dependant_del_args.parse_args()
+        deleteDependant(args)
+        return { "message": "Deleted from database" }, 204
 
-#add resource to the API
-#dependant resource
-dependant_api.add_resource(DependantResource, '/citizens/dependants/<int:dependant_id>')
-#dependant list resource
-dependant_api.add_resource(DependantList, '/citizens/dependants')
+# Add resource to the API
+dependant_api.add_resource(DependantResource, "")
 
-#Function to send sms notification 
-def SMS():
-    print("An sms will be sent to you shortly...")
+# Get a dependant by their ID
+def getDependant(args):
+    result = Citizen.query.filter_by(parent_id=args["parent_id"]).all()
+    if result:
+        return result
+    else:
+        abort(404, message="A dependant with this parentID does not exist")
+
+# Add a dependant to the database
+def addDependant(args):
+    result = Citizen.query.filter_by(id_citizen = args["id_citizen"]).first()
+    if result:
+        abort(409, message="A dependant with this ID already exists")
+    else:
+        result = Citizen.query.filter_by(id_citizen = args["parent_id"]).first()
+        if result:
+            try:
+                date = datetime.strptime(args["date_of_birth"], '%Y-%m-%d')
+            except ValueError:
+                abort(400, message="The date should be in format YYYY-MM-DD")
+            new_dependant = Citizen(id_citizen = args["id_citizen"], email = args["email"], name = args["name"],
+            surname = args["surname"], date_of_birth = date,
+            mobile_num = args["mobile_num"], medical_aid = args["medical_aid"],
+            citizen_address = args["citizen_address"], parent_id = args["parent_id"])
+            db.session.add(new_dependant)
+            db.session.commit()
+            smsHandler.sendMockSms("A dependant has been added", result.mobile_num)
+        else:
+            abort(404, message="A parent with this ID does not exist")
+
+# Update the dependant in the database
+def updateDependant(args):
+    result = Citizen.query.filter_by(id_citizen=args["id_citizen"]).first()
+    if not result:
+        abort(404, message="A dependant with this ID does not exist, cannot update")
+    else:
+        if args["email"]:
+            result.email = args["email"]
+        if args["name"]:
+            result.name = args["name"]
+        if args["surname"]:
+            result.surname = args["surname"]
+        if args["date_of_birth"]:
+            try:
+                date = datetime.strptime(args["date_of_birth"], '%Y-%m-%d')
+            except ValueError:
+                abort(400, message="The date should be in format YYYY-MM-DD")
+            result.date_of_birth = date
+        if args["mobile_num"]:
+            result.mobile_num = args["mobile_num"]
+        if args["medical_aid"]:
+            result.medical_aid = args["medical_aid"]
+        if args["citizen_address"]:
+            result.citizen_address = args["citizen_address"]
+        if args["parent_id"]:
+            result.parent_id = args["parent_id"]
+        db.session.commit()
+
+# delete from the database
+def deleteDependant(args):
+    result = Citizen.query.filter_by(id_citizen=args["id_citizen"]).first()
+    if not result:
+        abort(404, message="Dependant with this ID does not exist, cannot delete")
+    else:
+        db.session.delete(result)
+        db.session.commit()
