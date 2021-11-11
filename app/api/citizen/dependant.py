@@ -19,6 +19,9 @@ dependant_post_args.add_argument("parent_id", type=int, help="Parent ID is requi
 #Parser to check that required arguments are sent to update
 dependant_put_args = reqparse.RequestParser()
 dependant_put_args.add_argument("email", type=str)
+dependant_put_args.add_argument("name", type=str)
+dependant_put_args.add_argument("surname", type=str)
+dependant_put_args.add_argument("date_of_birth", type=str)
 dependant_put_args.add_argument("mobile_num", type=str)
 dependant_put_args.add_argument("medical_aid", type=str)
 dependant_put_args.add_argument("address", type=str)
@@ -86,6 +89,12 @@ class DependantResource(Resource):
         
         if args['email']:
             dependant.email = args['email']
+         if args['name']:
+            dependant.email = args['name']
+         if args['surname']:
+            dependant.email = args['surname']
+         if args['date_of_birth']:
+            dependant.email = args['date_of_birth']
         if args['mobile_num']:
             dependant.mobile_num = args['mobile_num']
         if args['medical_aid']:
