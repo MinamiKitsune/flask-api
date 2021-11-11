@@ -32,7 +32,7 @@ def main():
                                     date_of_birth TEXT NOT NULL,
                                     mobile_num TEXT NOT NULL,
                                     medical_aid TEXT NOT NULL,
-                                    address TEXT NOT NULL,
+                                    citizen_address TEXT NOT NULL,
                                     parent_id TEXT,
                                     FOREIGN KEY (parent_id) REFERENCES citizen (id_citizen)
                                 );"""
@@ -53,7 +53,7 @@ def main():
 
     sql_create_location_table = """CREATE TABLE IF NOT EXISTS location (
                                     id_location INTEGER PRIMARY KEY,
-                                    address TEXT NOT NULL,
+                                    location_address TEXT NOT NULL,
                                     country TEXT NOT NULL,
                                     zip_code TEXT NOT NULL,
                                     name_of_place TEXT NOT NULL
