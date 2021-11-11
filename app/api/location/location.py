@@ -8,14 +8,14 @@ from app import db
 # Parser to check if the required arguments are sent to get location data
 location_get_args = reqparse.RequestParser()
 location_get_args.add_argument("id_location", type=str, help="The ID of the location in Int format")
-location_get_args.add_argument("address", type=str, help="The address of the location in String format")
+location_get_args.add_argument("location_address", type=str, help="The address of the location in String format")
 location_get_args.add_argument("country", type=str, help="The country of the location in String format")
 location_get_args.add_argument("zip_code", type=str, help="The zip code of the location in String format")
 location_get_args.add_argument("name_of_place", type=str, help="The name of the location in String format")
 
 # Parser to check if the required arguments are sent to add a new location
 location_put_args = reqparse.RequestParser()
-location_put_args.add_argument("address", type=str, help="The address of the location in String format is required", required=True)
+location_put_args.add_argument("location_address", type=str, help="The address of the location in String format is required", required=True)
 location_put_args.add_argument("country", type=str, help="The country of the location in String format is required", required=True)
 location_put_args.add_argument("zip_code", type=str, help="The zip code of the location in String format is required", required=True)
 location_put_args.add_argument("name_of_place", type=str, help="The name of the location in String format is required", required=True)
@@ -23,7 +23,7 @@ location_put_args.add_argument("name_of_place", type=str, help="The name of the 
 # Parser to check if the required arguments are sent to update a location
 location_patch_args = reqparse.RequestParser()
 location_patch_args.add_argument("id_location", type=str, help="The ID of the location in Int format is required", required=True)
-location_patch_args.add_argument("address", type=str, help="The address of the location in String format")
+location_patch_args.add_argument("location_address", type=str, help="The address of the location in String format")
 location_patch_args.add_argument("country", type=str, help="The country of the location in String format")
 location_patch_args.add_argument("zip_code", type=str, help="The zip code of the location in String format")
 location_patch_args.add_argument("name_of_place", type=str, help="The name of the location in String format")
@@ -35,7 +35,7 @@ location_del_args.add_argument("id_location", type=str, help="The ID of the loca
 #Fields to marshal the responses
 resource_fields = {
     'id_location' : fields.Integer,
-    'address' : fields.String,
+    'location_address' : fields.String,
     'country' : fields.String,
     'zip_code' : fields.String,
     'name_of_place' : fields.String
@@ -82,9 +82,9 @@ def getLocation(args):
             return result
         else:
             abort(404, message="A location with this ID does not exist")
-    elif args["address"]:
-        search = "%{}%".format(args["address"])
-        result = Location.query.filter(Location.address.like(search)).first()
+    elif args["location_address"]:
+        search = "%{}%".format(args["location_address"])
+        result = Location.query.filter(Location.location_address.like(search)).first()
         if result:
             return result
         else:
@@ -111,14 +111,14 @@ def getLocation(args):
         else:
             abort(404, message="A location with this name does not exist")
     else:
-        abort(400, message="Not the correct arguments specified; only id_location, address, country, zip_code or name_of_place can be used")
+        abort(400, message="Not the correct arguments specified; only id_location, location_address, country, zip_code or name_of_place can be used")
 
 def addLocation(args):
-    result = Location.query.filter_by(address = args["address"]).first()
+    result = Location.query.filter_by(location_address = args["location_address"]).first()
     if result:
         abort(409, message="A location with this address already exists")
     else:
-        new_location = Location(address = args["address"], country = args["country"],
+        new_location = Location(location_address = args["location_address"], country = args["country"],
         zip_code = args["zip_code"], name_of_place = args["name_of_place"])
         db.session.add(new_location)
         db.session.commit()
@@ -130,8 +130,8 @@ def updateLocation(args):
     else:
         if args["id_location"]:
             result.id_location = args["id_location"]
-        if args["address"]:
-            result.address = args["address"]
+        if args["location_address"]:
+            result.location_address = args["location_address"]
         if args["country"]:
             result.country = args["country"]
         if args["zip_code"]:
