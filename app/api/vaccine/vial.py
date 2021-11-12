@@ -7,21 +7,27 @@ from app import db
 
 # Parser to check if the required arguments are sent to get vial data from the database
 vial_get_args = reqparse.RequestParser()
-vial_get_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
+vial_get_args.add_argument("id_vial", type=str, required=True,
+help="The ID of the vial in String format is required")
 
 # Parser to check if the required arguments are sent to add vial data to the database
 vial_put_args = reqparse.RequestParser()
-vial_put_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
-vial_put_args.add_argument("vaccine_id", type=int, help="The ID of the vaccine in Int format", required=True)
+vial_put_args.add_argument("id_vial", type=str, required=True,
+help="The ID of the vial in String format is required")
+vial_put_args.add_argument("vaccine_id", type=int, required=True,
+help="The ID of the vaccine in Int format is required")
 
 # Parser to check if the required arguments are sent to update vial data in the database
 vial_patch_args = reqparse.RequestParser()
-vial_patch_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
-vial_patch_args.add_argument("vaccine_id", type=int, help="The ID of the vaccine in Int format", required=True)
+vial_patch_args.add_argument("id_vial", type=str, required=True,
+help="The ID of the vial in String format is required")
+vial_patch_args.add_argument("vaccine_id", type=int, required=True,
+help="The ID of the vaccine in Int format is required")
 
 # Parser to check if the required arguments are sent to delete vial data from the database
 vial_del_args = reqparse.RequestParser()
-vial_del_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
+vial_del_args.add_argument("id_vial", type=str, required=True,
+help="The ID of the vial in String format is required")
 
 # fields to marshal the responses
 resource_fields = {
@@ -37,26 +43,39 @@ resource_fields = {
 class VialResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        args = vial_get_args.parse_args()
-        dataHandler.removeSpace(args)
-        return getVial(args), 200
+        try:
+            args = vial_get_args.parse_args()
+            dataHandler.removeSpace(args)
+            return getVial(args), 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def put(self):
-        args = vial_put_args.parse_args()
-        dataHandler.removeSpace(args)
-        addVial(args)
-        return { "message": "Added to database" }, 201
+        try:
+            args = vial_put_args.parse_args()
+            dataHandler.removeSpace(args)
+            addVial(args)
+            return { "message": "Added to database" }, 201
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def patch(self):
-        args = vial_patch_args.parse_args()
-        dataHandler.removeSpace(args)
-        updateVial(args)
-        return { "message": "Updated the database" }, 200
+        try:
+            args = vial_patch_args.parse_args()
+            dataHandler.removeSpace(args)
+            updateVial(args)
+            return { "message": "Updated the database" }, 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def delete(self):
-        args = vial_del_args.parse_args()
-        deleteVial(args)
-        return { "message": "Deleted from database" }, 204
+        try:
+            args = vial_del_args.parse_args()
+            dataHandler.removeSpace(args)
+            deleteVial(args)
+            return { "message": "Deleted from database" }, 204
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
 # Add the resource to the API
 vial_api.add_resource(VialResource, "")

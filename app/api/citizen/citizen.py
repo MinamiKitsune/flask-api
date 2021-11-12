@@ -8,33 +8,51 @@ from app import db
 
 # Parser to check that required arguments are sent to add a citizen to the database
 citizen_put_args = reqparse.RequestParser()
-citizen_put_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
-citizen_put_args.add_argument("email", type=str, help="Email is required in string format", required=True)
-citizen_put_args.add_argument("name", type=str, help="Name is required in string format", required=True)
-citizen_put_args.add_argument("surname", type=str, help="Surname is required in string format", required=True)
-citizen_put_args.add_argument("date_of_birth", type=str, help="Date of birth is required in the format YYYY-MM-DD", required=True)
-citizen_put_args.add_argument("mobile_num", type=str, help="Mobile number is required in string format", required=True)
-citizen_put_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
-citizen_put_args.add_argument("citizen_address", type=str, help="Address is required in string format")
+citizen_put_args.add_argument("id_citizen", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
+citizen_put_args.add_argument("email", type=str, required=True,
+help="The email of the citizen is required. The argument should be a String.")
+citizen_put_args.add_argument("name", type=str, required=True,
+help="The name of the citizen is required. The argument should be a String.")
+citizen_put_args.add_argument("surname", type=str, required=True,
+help="The surname of the citizen is required. The argument should be a String.")
+citizen_put_args.add_argument("date_of_birth", type=str, required=True,
+help="The date of birth of the citizen is required in the format YYYY-MM-DD. The argument should be a String.")
+citizen_put_args.add_argument("mobile_num", type=str, required=True,
+help="The mobile number of the citizen is required. The argument should be a String.")
+citizen_put_args.add_argument("medical_aid", type=str,
+help="The medical aid number of the citizen should be a String.")
+citizen_put_args.add_argument("citizen_address", type=str,
+help="The citizen address should be a String.")
 
 # Parser to check that required arguments are sent to get a citizen from the database
 citizen_get_args = reqparse.RequestParser()
-citizen_get_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
+citizen_get_args.add_argument("id_citizen", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
 
 # Parser to check that required arguments are sent to update a citizen in the database
 citizen_patch_args = reqparse.RequestParser()
-citizen_patch_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
-citizen_patch_args.add_argument("email", type=str, help="Email is required in string format")
-citizen_patch_args.add_argument("name", type=str, help="Name is required in string format")
-citizen_patch_args.add_argument("surname", type=str, help="Surname is required in string format")
-citizen_patch_args.add_argument("date_of_birth", type=str, help="Date of birth is required in the format YYYY-MM-DD")
-citizen_patch_args.add_argument("mobile_num", type=str, help="Mobile number is required in string format")
-citizen_patch_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
-citizen_patch_args.add_argument("citizen_address", type=str, help="Address is required in string format")
+citizen_patch_args.add_argument("id_citizen", type=str, required=True, 
+help="The ID of the citizen is required. The argument should be a String.")
+citizen_patch_args.add_argument("email", type=str,
+help="The citizen email address should be a String.")
+citizen_patch_args.add_argument("name", type=str,
+help="The citizen name should be a String.")
+citizen_patch_args.add_argument("surname", type=str,
+help="The citizen surname should be a String.")
+citizen_patch_args.add_argument("date_of_birth", type=str,
+help="The date of birth of the citizen is should be in the format YYYY-MM-DD. The argument should be a String.")
+citizen_patch_args.add_argument("mobile_num", type=str,
+help="The mobile number of the citizen should be a String")
+citizen_patch_args.add_argument("medical_aid", type=str,
+help="The medical aid number of the citizen should be a String.")
+citizen_patch_args.add_argument("citizen_address", type=str,
+help="Address is required in string format")
 
 # Parser to check that required arguments are sent to delete a citizen from the database
 citizen_del_args = reqparse.RequestParser()
-citizen_del_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
+citizen_del_args.add_argument("id_citizen", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
 
 # Fields to marshal the responses
 resource_fields = {
@@ -52,26 +70,39 @@ resource_fields = {
 class CitizenResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        args = citizen_get_args.parse_args()
-        dataHandler.cleanData(args)
-        return getCitizen(args), 200
+        try:
+            args = citizen_get_args.parse_args()
+            dataHandler.cleanData(args)
+            return getCitizen(args), 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
     def put(self):
-        args = citizen_put_args.parse_args()
-        dataHandler.cleanData(args)
-        addCitizen(args)
-        return { "message": "Added to database" }, 201
+        try:
+            args = citizen_put_args.parse_args()
+            dataHandler.cleanData(args)
+            addCitizen(args)
+            return { "message": "Added to database" }, 201
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def patch(self):
-        args = citizen_patch_args.parse_args()
-        dataHandler.cleanData(args)
-        updateCitizen(args)
-        return { "message": "Updated the database" }, 200
+        try:
+            args = citizen_patch_args.parse_args()
+            dataHandler.cleanData(args)
+            updateCitizen(args)
+            return { "message": "Updated the database" }, 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def delete(self):
-        args = citizen_del_args.parse_args()
-        deleteCitizen(args)
-        return { "message": "Deleted from database" }, 204
+        try:
+            args = citizen_del_args.parse_args()
+            dataHandler.cleanData(args)
+            deleteCitizen(args)
+            return { "message": "Deleted from database" }, 204
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
 # Add resource to the API
 citizen_api.add_resource(CitizenResource, "")

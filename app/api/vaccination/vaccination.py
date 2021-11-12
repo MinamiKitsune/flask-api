@@ -9,28 +9,41 @@ from app import db
 
 # Parser to check that required arguments are sent to add a vaccination to the database
 vaccination_put_args = reqparse.RequestParser()
-vaccination_put_args.add_argument("citizen_id", type=str, help="The ID number of the citizen is required in String format", required=True)
-vaccination_put_args.add_argument("vial_id", type=str, help="The vial ID of the vial is required in Int format", required=True)
-vaccination_put_args.add_argument("location_id", type=int, help="The location ID is required in Int format", required=True)
-vaccination_put_args.add_argument("date_of_vaccination", type=str, help="The date of the vaccination is required in the format of YYYY-MM-DD", required=True)
-vaccination_put_args.add_argument("dosage_number", type=int, help="The dosage number is required in the Int format", required=True)
-vaccination_put_args.add_argument("side_effects", type=bool, help="The side effects is required and has to be in Boolean format", required=True)
-vaccination_put_args.add_argument("description_side_effects", type=str, help="Side effects description needs to be in String format")
+vaccination_put_args.add_argument("citizen_id", type=str, required=True,
+help="The ID number of the citizen is required in String format.")
+vaccination_put_args.add_argument("vial_id", type=str, required=True,
+help="The vial ID of the vial is required in String format.")
+vaccination_put_args.add_argument("location_id", type=int, required=True,
+help="The location ID is required in Int format.")
+vaccination_put_args.add_argument("date_of_vaccination", type=str, required=True,
+help="The date of the vaccination is required, the format should be YYYY-MM-DD")
+vaccination_put_args.add_argument("dosage_number", type=int, required=True,
+help="The dosage number is required in the Int format.")
+vaccination_put_args.add_argument("side_effects", type=bool, required=True,
+help="The side effects is required and has to be in Boolean format.")
+vaccination_put_args.add_argument("description_side_effects",
+type=str, help="Side effects description needs to be in String format.")
 
 # Parser to check that required arguments are sent to get a vaccination from the database
 vaccination_get_args = reqparse.RequestParser()
-vaccination_get_args.add_argument("id_vaccination", type=str, help="The ID of the vaccination is required in String format", required=True)
+vaccination_get_args.add_argument("id_vaccination", type=str, required=True,
+help="The ID of the vaccination is required in String format.")
 
 # Parser to check that required arguments are sent to update a vaccination
 vaccination_patch_args = reqparse.RequestParser()
-vaccination_patch_args.add_argument("id_vaccination", type=str, help="The ID of the vaccination is required in String format", required=True)
-vaccination_patch_args.add_argument("dosage_number", type=int, help="The dosage number is required in the Int format")
-vaccination_patch_args.add_argument("side_effects", type=bool, help="The side effects is required and has to be in Boolean format")
-vaccination_patch_args.add_argument("description_side_effects", type=str, help="Side effects description needs to be in String format")
+vaccination_patch_args.add_argument("id_vaccination", type=str, required=True,
+help="The ID of the vaccination is required in String format.")
+vaccination_patch_args.add_argument("dosage_number", type=int,
+help="The dosage number need to be in Int format.")
+vaccination_patch_args.add_argument("side_effects", type=bool,
+help="The side effects has to be in Boolean format.")
+vaccination_patch_args.add_argument("description_side_effects", type=str,
+help="Side effects description needs to be in String format.")
 
 # Parser to check that required arguments are sent to delete a vaccination
 vaccination_del_args = reqparse.RequestParser()
-vaccination_del_args.add_argument("id_vaccination", type=str, help="The ID of the vaccination is required in String format", required=True)
+vaccination_del_args.add_argument("id_vaccination", type=str, required=True,
+help="The ID of the vaccination is required in String format.")
 
 # Fields to marshal the responses
 resource_fields = {
@@ -66,30 +79,39 @@ resource_fields = {
 class VaccinationResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        args = vaccination_get_args.parse_args()
-        dataHandler.removeSpace(args)
-        return getVaccination(args), 200
+        try:
+            args = vaccination_get_args.parse_args()
+            dataHandler.removeSpace(args)
+            return getVaccination(args), 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def put(self):
-        # TODO test this
-        args = vaccination_put_args.parse_args()
-        dataHandler.removeSpace(args)
-        addVaccination(args)
-        return { "message": "Added to database" }, 201
+        try:
+            args = vaccination_put_args.parse_args()
+            dataHandler.removeSpace(args)
+            addVaccination(args)
+            return { "message": "Added to database" }, 201
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def patch(self):
-        # TODO test this
-        args = vaccination_patch_args.parse_args()
-        dataHandler.removeSpace(args)
-        updateVaccination(args)
-        return { "message": "Updated the database" }, 200
+        try:
+            args = vaccination_patch_args.parse_args()
+            dataHandler.removeSpace(args)
+            updateVaccination(args)
+            return { "message": "Updated the database" }, 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def delete(self):
-        # TODO test this
-        args = vaccination_del_args.parse_args()
-        dataHandler.removeSpace(args)
-        deleteVaccination(args)
-        return { "message": "Deleted from database" }, 204
+        try:
+            args = vaccination_del_args.parse_args()
+            dataHandler.removeSpace(args)
+            deleteVaccination(args)
+            return { "message": "Deleted from database" }, 204
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
 # Add the resource to the API
 vaccination_api.add_resource(VaccinationResource, "")

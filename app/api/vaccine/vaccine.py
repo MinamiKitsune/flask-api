@@ -7,28 +7,41 @@ from app import db
 
 # Parser to check if the required arguments are sent to add a vaccine to the database
 vaccine_put_args = reqparse.RequestParser()
-vaccine_put_args.add_argument("vaccine_name", type=str, help="The name of the vaccine is required in String format", required=True)
-vaccine_put_args.add_argument("target_disease", type=str, help="The name of the target disease that the vaccine is made for is required in String format", required=True)
-vaccine_put_args.add_argument("number_to_administer", type=int, help="The number of dossages the vaccine requires is required in Int format", required=True)
-vaccine_put_args.add_argument("dosage_interval", type=int, help="The number of days that need to elapse before the next dose is administered")
+vaccine_put_args.add_argument("vaccine_name", type=str, required=True,
+help="The name of the vaccine is required in String format.")
+vaccine_put_args.add_argument("target_disease", type=str, required=True,
+help="The name of the target disease that the vaccine is made for is required in String format.")
+vaccine_put_args.add_argument("number_to_administer", type=int, required=True,
+help="The number of dossages the vaccine requires is required in Int format.")
+vaccine_put_args.add_argument("dosage_interval", type=int,
+help="The number of days that need to elapse before the next dose is administered.")
 
 # Parser to check if the required arguments are sent to get vaccines data
 vaccine_get_args = reqparse.RequestParser()
-vaccine_get_args.add_argument("id_vaccine", type=int, help="The ID of the vaccine in Int format")
-vaccine_get_args.add_argument("vaccine_name", type=str, help="The name of the vaccine is required in String format")
-vaccine_get_args.add_argument("target_disease", type=str, help="The name of the target disease that the vaccine is made for is required in String format")
+vaccine_get_args.add_argument("id_vaccine", type=int,
+help="The ID of the vaccine needs to be Int format.")
+vaccine_get_args.add_argument("vaccine_name", type=str,
+help="The name of the vaccine needs to be in String format.")
+vaccine_get_args.add_argument("target_disease", type=str,
+help="The name of the target disease that the vaccine is made for needs to be in String format.")
 
 # Parser to check required arguments are sent to update a vaccine in the database
 vaccine_patch_args = reqparse.RequestParser()
-vaccine_patch_args.add_argument("id_vaccine", type=int, help="The ID of the vaccine in Int format", required=True)
-vaccine_patch_args.add_argument("vaccine_name", type=str, help="The name of the vaccine is required in String format")
-vaccine_patch_args.add_argument("target_disease", type=str, help="The name of the target disease that the vaccine is made for is required in String format")
-vaccine_patch_args.add_argument("number_to_administer", type=int, help="The number of dossages the vaccine requires is required in Int format")
-vaccine_patch_args.add_argument("dosage_interval", type=int, help="The number of days that need to elapse before the next dose is administered")
+vaccine_patch_args.add_argument("id_vaccine", type=int, required=True,
+help="The ID of the vaccine in Int format is required.")
+vaccine_patch_args.add_argument("vaccine_name", type=str,
+help="The name of the vaccine needs to be in String format.")
+vaccine_patch_args.add_argument("target_disease", type=str,
+help="The name of the target disease that the vaccine is made for needs to be in String format.")
+vaccine_patch_args.add_argument("number_to_administer", type=int,
+help="The number of dossages the vaccine requires needs to be in Int format.")
+vaccine_patch_args.add_argument("dosage_interval", type=int,
+help="The number of days that need to elapse before the next dose is administered needs to be in Int format.")
 
 # Parser to check required arguments are sent to delete a vaccine from the database
 vaccine_del_args = reqparse.RequestParser()
-vaccine_del_args.add_argument("id_vaccine", type=int, help="The ID of the vaccine in Int format", required=True)
+vaccine_del_args.add_argument("id_vaccine", type=int, required=True,
+help="The ID of the vaccine in Int format is required.")
 
 # fields to marshal the responses
 resource_fields = {
@@ -43,32 +56,45 @@ resource_fields = {
 class VaccineResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        args = vaccine_get_args.parse_args()
-        dataHandler.cleanData(args)
-        if dataHandler.checkIfEmpty(args):
-            return getAllVaccine(), 200
-        else:
-            return getVaccine(args), 200
+        try:
+            args = vaccine_get_args.parse_args()
+            dataHandler.cleanData(args)
+            if dataHandler.checkIfEmpty(args):
+                return getAllVaccine(), 200
+            else:
+                return getVaccine(args), 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def put(self):
-        args = vaccine_put_args.parse_args()
-        dataHandler.cleanData(args)
-        if args["number_to_administer"] > 1 and args["dosage_interval"] == None:
-            abort(400, message="A number of dosages greater than 1 is specified with no dosage interval, please add a dosage interval")
-        else:
-            addVaccine(args)
-        return { "message": "Added to database" }, 201
+        try:
+            args = vaccine_put_args.parse_args()
+            dataHandler.cleanData(args)
+            if args["number_to_administer"] > 1 and args["dosage_interval"] == None:
+                abort(400, message="A number of dosages greater than 1 is specified with no dosage interval, please add a dosage interval")
+            else:
+                addVaccine(args)
+            return { "message": "Added to database" }, 201
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def patch(self):
-        args = vaccine_patch_args.parse_args()
-        dataHandler.cleanData(args)
-        updateVaccine(args)
-        return { "message": "Updated the database" }, 200
+        try:
+            args = vaccine_patch_args.parse_args()
+            dataHandler.cleanData(args)
+            updateVaccine(args)
+            return { "message": "Updated the database" }, 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def delete(self):
-        args = vaccine_patch_args.parse_args()
-        deleteVaccine(args)
-        return { "message": "Deleted from database" }, 204
+        try:
+            args = vaccine_patch_args.parse_args()
+            dataHandler.cleanData(args)
+            deleteVaccine(args)
+            return { "message": "Deleted from database" }, 204
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
 
 # Add the resource to the API

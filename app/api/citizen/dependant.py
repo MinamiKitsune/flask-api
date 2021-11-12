@@ -8,35 +8,55 @@ from app import db
 
 # Parser to check that required arguments are sent to add dependant to the database
 dependant_put_args = reqparse.RequestParser()
-dependant_put_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
-dependant_put_args.add_argument("email", type=str, help="Email is required in string format", required=True)
-dependant_put_args.add_argument("name", type=str, help="Name is required in string format", required=True)
-dependant_put_args.add_argument("surname", type=str, help="Surname is required in string format", required=True)
-dependant_put_args.add_argument("date_of_birth", type=str, help="Date of birth is required in the format YYYY-MM-DD", required=True)
-dependant_put_args.add_argument("mobile_num", type=str, help="Mobile number is required in string format", required=True)
-dependant_put_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
-dependant_put_args.add_argument("citizen_address", type=str, help="Address is required in string format")
-dependant_put_args.add_argument("parent_id", type=str, help="The ID of the parent in string format", required=True)
+dependant_put_args.add_argument("id_citizen", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
+dependant_put_args.add_argument("email", type=str, required=True,
+help="The email of the citizen is required. The argument should be a String.")
+dependant_put_args.add_argument("name", type=str, required=True,
+help="The name of the citizen is required. The argument should be a String.")
+dependant_put_args.add_argument("surname", type=str, required=True,
+help="The surname of the citizen is required. The argument should be a String.")
+dependant_put_args.add_argument("date_of_birth", type=str, required=True,
+help="The date of birth of the citizen is required in the format YYYY-MM-DD. The argument should be a String.")
+dependant_put_args.add_argument("mobile_num", type=str, required=True,
+help="The mobile number of the citizen is required. The argument should be a String.")
+dependant_put_args.add_argument("medical_aid", type=str,
+help="The medical aid number of the citizen should be a String.")
+dependant_put_args.add_argument("citizen_address", type=str,
+help="The citizen address should be a String.")
+dependant_put_args.add_argument("parent_id", type=str, required=True,
+help="The ID of the parent is required. The argument should be a String.")
 
 # Parser to check that required arguments are sent to get a dependant from the database
 dependant_get_args = reqparse.RequestParser()
-dependant_get_args.add_argument("parent_id", type=str, help="The ID of the parent in string format", required=True)
+dependant_get_args.add_argument("parent_id", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
 
 # Parser to check that required arguments are sent to update a dependant in the database
 dependant_patch_args = reqparse.RequestParser()
-dependant_patch_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
-dependant_patch_args.add_argument("email", type=str, help="Email is required in string format")
-dependant_patch_args.add_argument("name", type=str, help="Name is required in string format")
-dependant_patch_args.add_argument("surname", type=str, help="Surname is required in string format")
-dependant_patch_args.add_argument("date_of_birth", type=str, help="Date of birth is required in the format YYYY-MM-DD")
-dependant_patch_args.add_argument("mobile_num", type=str, help="Mobile number is required in string format")
-dependant_patch_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
-dependant_patch_args.add_argument("citizen_address", type=str, help="Address is required in string format")
-dependant_patch_args.add_argument("parent_id", type=str, help="The ID of the parent in string format")
+dependant_patch_args.add_argument("id_citizen", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
+dependant_patch_args.add_argument("email", type=str,
+help="The citizen email address should be a String.")
+dependant_patch_args.add_argument("name", type=str,
+help="The citizen name should be a String.")
+dependant_patch_args.add_argument("surname", type=str,
+help="The citizen surname should be a String.")
+dependant_patch_args.add_argument("date_of_birth", type=str,
+help="The date of birth of the citizen is should be in the format YYYY-MM-DD. The argument should be a String.")
+dependant_patch_args.add_argument("mobile_num", type=str,
+help="The mobile number of the citizen should be a String")
+dependant_patch_args.add_argument("medical_aid", type=str,
+help="The medical aid number of the citizen should be a String.")
+dependant_patch_args.add_argument("citizen_address", type=str,
+help="Address is required in string format")
+dependant_patch_args.add_argument("parent_id", type=str,
+help="The ID of the parent is required. The argument should be a String.")
 
 # Parser to check that required arguments are sent to delete a citizen from the database
 dependant_del_args = reqparse.RequestParser()
-dependant_del_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
+dependant_del_args.add_argument("id_citizen", type=str, required=True,
+help="The ID of the citizen is required. The argument should be a String.")
 
 # Fields to marshal the responses
 resource_fields = {
@@ -55,26 +75,39 @@ resource_fields = {
 class DependantResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        args = dependant_get_args.parse_args()
-        dataHandler.cleanData(args)
-        return getDependant(args), 200
+        try:
+            args = dependant_get_args.parse_args()
+            dataHandler.cleanData(args)
+            return getDependant(args), 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
     def put(self):
-        args = dependant_put_args.parse_args()
-        dataHandler.cleanData(args)
-        addDependant(args)
-        return { "message": "Added to database" }, 201
+        try:
+            args = dependant_put_args.parse_args()
+            dataHandler.cleanData(args)
+            addDependant(args)
+            return { "message": "Added to database" }, 201
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def patch(self):
-        args = dependant_patch_args.parse_args()
-        dataHandler.cleanData(args)
-        updateDependant(args)
-        return { "message": "Updated the database" }, 200
+        try:
+            args = dependant_patch_args.parse_args()
+            dataHandler.cleanData(args)
+            updateDependant(args)
+            return { "message": "Updated the database" }, 20
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def delete(self):
-        args = dependant_del_args.parse_args()
-        deleteDependant(args)
-        return { "message": "Deleted from database" }, 204
+        try:
+            args = dependant_del_args.parse_args()
+            dataHandler.cleanData(args)
+            deleteDependant(args)
+            return { "message": "Deleted from database" }, 204
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
 # Add resource to the API
 dependant_api.add_resource(DependantResource, "")

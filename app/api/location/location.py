@@ -7,30 +7,45 @@ from app import db
 
 # Parser to check if the required arguments are sent to get location data from the database
 location_get_args = reqparse.RequestParser()
-location_get_args.add_argument("id_location", type=str, help="The ID of the location in Int format")
-location_get_args.add_argument("location_address", type=str, help="The address of the location in String format")
-location_get_args.add_argument("country", type=str, help="The country of the location in String format")
-location_get_args.add_argument("zip_code", type=str, help="The zip code of the location in String format")
-location_get_args.add_argument("name_of_place", type=str, help="The name of the location in String format")
+location_get_args.add_argument("id_location", type=str,
+help="The ID of the location in Int format")
+location_get_args.add_argument("location_address", type=str,
+help="The address of the location in String format")
+location_get_args.add_argument("country", type=str,
+help="The country of the location in String format")
+location_get_args.add_argument("zip_code", type=str,
+help="The zip code of the location in String format")
+location_get_args.add_argument("name_of_place", type=str,
+help="The name of the location in String format")
 
 # Parser to check if the required arguments are sent to add a new location to the database
 location_put_args = reqparse.RequestParser()
-location_put_args.add_argument("location_address", type=str, help="The address of the location in String format is required", required=True)
-location_put_args.add_argument("country", type=str, help="The country of the location in String format is required", required=True)
-location_put_args.add_argument("zip_code", type=str, help="The zip code of the location in String format is required", required=True)
-location_put_args.add_argument("name_of_place", type=str, help="The name of the location in String format is required", required=True)
+location_put_args.add_argument("location_address", type=str, required=True,
+help="The address of the location in String format is required")
+location_put_args.add_argument("country",type=str, required=True,
+help="The country of the location in String format is required")
+location_put_args.add_argument("zip_code", type=str, required=True,
+help="The zip code of the location in String format is required")
+location_put_args.add_argument("name_of_place", type=str, required=True,
+help="The name of the location in String format is required")
 
 # Parser to check if the required arguments are sent to update a location in the database
 location_patch_args = reqparse.RequestParser()
-location_patch_args.add_argument("id_location", type=str, help="The ID of the location in Int format is required", required=True)
-location_patch_args.add_argument("location_address", type=str, help="The address of the location in String format")
-location_patch_args.add_argument("country", type=str, help="The country of the location in String format")
-location_patch_args.add_argument("zip_code", type=str, help="The zip code of the location in String format")
-location_patch_args.add_argument("name_of_place", type=str, help="The name of the location in String format")
+location_patch_args.add_argument("id_location", type=str, required=True,
+help="The ID of the location in Int format is required")
+location_patch_args.add_argument("location_address", type=str,
+help="The address of the location in String format")
+location_patch_args.add_argument("country", type=str,
+help="The country of the location in String format")
+location_patch_args.add_argument("zip_code", type=str,
+help="The zip code of the location in String format")
+location_patch_args.add_argument("name_of_place", type=str,
+help="The name of the location in String format")
 
 # Parser to check if the required arguments are sent to delete a location from the database
 location_del_args = reqparse.RequestParser()
-location_del_args.add_argument("id_location", type=str, help="The ID of the location in Int format is required", required=True)
+location_del_args.add_argument("id_location", type=str, required=True,
+help="The ID of the location in Int format is required")
 
 #Fields to marshal the responses
 resource_fields = {
@@ -45,29 +60,42 @@ resource_fields = {
 class LocationResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        args = location_get_args.parse_args()
-        dataHandler.cleanData(args)
-        if dataHandler.checkIfEmpty(args):
-            return getAllLocations(), 200
-        else:
-            return getLocation(args), 200
+        try:
+            args = location_get_args.parse_args()
+            dataHandler.cleanData(args)
+            if dataHandler.checkIfEmpty(args):
+                return getAllLocations(), 200
+            else:
+                return getLocation(args), 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def put(self):
-        args = location_put_args.parse_args()
-        dataHandler.cleanData(args)
-        addLocation(args)
-        return { "message": "Added to database" }, 201
+        try:
+            args = location_put_args.parse_args()
+            dataHandler.cleanData(args)
+            addLocation(args)
+            return { "message": "Added to database" }, 201
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def patch(self):
-        args = location_patch_args.parse_args()
-        dataHandler.cleanData(args)
-        updateLocation(args)
-        return { "message": "Updated the database" }, 200
+        try:
+            args = location_patch_args.parse_args()
+            dataHandler.cleanData(args)
+            updateLocation(args)
+            return { "message": "Updated the database" }, 200
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
     
     def delete(self):
-        args = location_del_args.parse_args()
-        deleteLocation(args)
-        return { "message": "Deleted from database" }, 204
+        try:
+            args = location_del_args.parse_args()
+            dataHandler.cleanData(args)
+            deleteLocation(args)
+            return { "message": "Deleted from database" }, 204
+        except Exception:
+            abort(500, message="An internal server error has occured, please try again later.")
 
 # Add resource to the API
 location_api.add_resource(LocationResource, '')
