@@ -6,8 +6,8 @@ from ..databaseModels import Location, Vial, Vaccine, Citizen, Vaccination
 from .. import dataHandler, smsHandler
 from app import db
 
-# Change these, they are wrong
-# Parser to check that required arguments are sent to add citizen
+
+# Parser to check that required arguments are sent to add a vaccination to the database
 vaccination_put_args = reqparse.RequestParser()
 vaccination_put_args.add_argument("citizen_id", type=str, help="The ID number of the citizen is required in String format", required=True)
 vaccination_put_args.add_argument("vial_id", type=str, help="The vial ID of the vial is required in Int format", required=True)
@@ -17,18 +17,18 @@ vaccination_put_args.add_argument("dosage_number", type=int, help="The dosage nu
 vaccination_put_args.add_argument("side_effects", type=bool, help="The side effects is required and has to be in Boolean format", required=True)
 vaccination_put_args.add_argument("description_side_effects", type=str, help="Side effects description needs to be in String format")
 
-# Parser to check that required arguments are sent to add citizen
+# Parser to check that required arguments are sent to get a vaccination from the database
 vaccination_get_args = reqparse.RequestParser()
 vaccination_get_args.add_argument("id_vaccination", type=str, help="The ID of the vaccination is required in String format", required=True)
 
-# Parser to check that required arguments are sent to add citizen
+# Parser to check that required arguments are sent to update a vaccination
 vaccination_patch_args = reqparse.RequestParser()
 vaccination_patch_args.add_argument("id_vaccination", type=str, help="The ID of the vaccination is required in String format", required=True)
 vaccination_patch_args.add_argument("dosage_number", type=int, help="The dosage number is required in the Int format")
 vaccination_patch_args.add_argument("side_effects", type=bool, help="The side effects is required and has to be in Boolean format")
 vaccination_patch_args.add_argument("description_side_effects", type=str, help="Side effects description needs to be in String format")
 
-# Parser to check that required arguments are sent to add citizen
+# Parser to check that required arguments are sent to delete a vaccination
 vaccination_del_args = reqparse.RequestParser()
 vaccination_del_args.add_argument("id_vaccination", type=str, help="The ID of the vaccination is required in String format", required=True)
 
@@ -135,7 +135,7 @@ def addVaccination(args):
                     db.session.commit()
                     smsHandler.sendMockVacinationSms("You have been vaccinated.", mobile, uniqueID)
 
-# update a vaccination
+# Update a vaccination
 def updateVaccination(args):
     result = Vaccination.query.filter_by(id_vaccination=args["id_vaccination"]).first()
     if not result:
@@ -167,14 +167,14 @@ def createUniqueID():
     else:
         return unique
 
-# checks if that vial exists in the database
+# Checks if a vial with the specified ID exists in the database and returns true if it does
 def vialExists(args):
     if Vial.query.filter_by(id_vial=args["vial_id"]).first():
         return True
     else:
         abort(404, message="A vial with this ID does not exist, please make sure the vial has been registered")
 
-# Checks if the citizen exists in the database and returns the mobile number as well
+# Checks if the citizen exists in the database and returns the mobile number and true if they exist
 def citizenExists(args):
     result = Citizen.query.filter_by(id_citizen=args["citizen_id"]).first()
     if result:
@@ -182,7 +182,7 @@ def citizenExists(args):
     else:
         abort(404, message="Citizen with this ID does not exist, please make sure the ID of the citizen has been entered correctly")
 
-# Checks if a location exists in the database
+# Checks if a location exists in the database and returns true if it does
 def locationExists(args):
     if Location.query.filter_by(id_location=args["location_id"]).first():
         return True

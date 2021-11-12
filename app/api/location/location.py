@@ -5,7 +5,7 @@ from .. import dataHandler
 from app import db
 
 
-# Parser to check if the required arguments are sent to get location data
+# Parser to check if the required arguments are sent to get location data from the database
 location_get_args = reqparse.RequestParser()
 location_get_args.add_argument("id_location", type=str, help="The ID of the location in Int format")
 location_get_args.add_argument("location_address", type=str, help="The address of the location in String format")
@@ -13,14 +13,14 @@ location_get_args.add_argument("country", type=str, help="The country of the loc
 location_get_args.add_argument("zip_code", type=str, help="The zip code of the location in String format")
 location_get_args.add_argument("name_of_place", type=str, help="The name of the location in String format")
 
-# Parser to check if the required arguments are sent to add a new location
+# Parser to check if the required arguments are sent to add a new location to the database
 location_put_args = reqparse.RequestParser()
 location_put_args.add_argument("location_address", type=str, help="The address of the location in String format is required", required=True)
 location_put_args.add_argument("country", type=str, help="The country of the location in String format is required", required=True)
 location_put_args.add_argument("zip_code", type=str, help="The zip code of the location in String format is required", required=True)
 location_put_args.add_argument("name_of_place", type=str, help="The name of the location in String format is required", required=True)
 
-# Parser to check if the required arguments are sent to update a location
+# Parser to check if the required arguments are sent to update a location in the database
 location_patch_args = reqparse.RequestParser()
 location_patch_args.add_argument("id_location", type=str, help="The ID of the location in Int format is required", required=True)
 location_patch_args.add_argument("location_address", type=str, help="The address of the location in String format")
@@ -28,7 +28,7 @@ location_patch_args.add_argument("country", type=str, help="The country of the l
 location_patch_args.add_argument("zip_code", type=str, help="The zip code of the location in String format")
 location_patch_args.add_argument("name_of_place", type=str, help="The name of the location in String format")
 
-# Parser to check if the required arguments are sent to delete a location
+# Parser to check if the required arguments are sent to delete a location from the database
 location_del_args = reqparse.RequestParser()
 location_del_args.add_argument("id_location", type=str, help="The ID of the location in Int format is required", required=True)
 
@@ -41,7 +41,7 @@ resource_fields = {
     'name_of_place' : fields.String
 }
 
-#Class to handle methods related to location
+# Class to handle methods related to location
 class LocationResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
@@ -69,12 +69,14 @@ class LocationResource(Resource):
         deleteLocation(args)
         return { "message": "Deleted from database" }, 204
 
-#add resource to the API
+# Add resource to the API
 location_api.add_resource(LocationResource, '')
 
+# Get all of the locations in the database
 def getAllLocations():
     return Location.query.all()
 
+# Get a single location from the database based on the arguments provided
 def getLocation(args):
     if args["id_location"]:
         result = Location.query.filter_by(id_location=args["id_location"]).first()
@@ -113,6 +115,7 @@ def getLocation(args):
     else:
         abort(400, message="Not the correct arguments specified; only id_location, location_address, country, zip_code or name_of_place can be used")
 
+# Add a location to the database
 def addLocation(args):
     result = Location.query.filter_by(location_address = args["location_address"]).first()
     if result:
@@ -123,6 +126,7 @@ def addLocation(args):
         db.session.add(new_location)
         db.session.commit()
 
+# Update a location in the database
 def updateLocation(args):
     result = Location.query.filter_by(id_location=args["id_location"]).first()
     if not result:
@@ -140,6 +144,7 @@ def updateLocation(args):
             result.name_of_place = args["name_of_place"]
         db.session.commit()
 
+# Delete a location in the database
 def deleteLocation(args):
     result = Location.query.filter_by(id_location=args["id_location"]).first()
     if not result:

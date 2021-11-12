@@ -6,7 +6,7 @@ from .. import dataHandler, smsHandler
 from app import db
 
 
-# Parser to check that required arguments are sent to add citizen
+# Parser to check that required arguments are sent to add a citizen to the database
 citizen_put_args = reqparse.RequestParser()
 citizen_put_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 citizen_put_args.add_argument("email", type=str, help="Email is required in string format", required=True)
@@ -17,11 +17,11 @@ citizen_put_args.add_argument("mobile_num", type=str, help="Mobile number is req
 citizen_put_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
 citizen_put_args.add_argument("citizen_address", type=str, help="Address is required in string format")
 
-# Parser to check that required arguments are sent to get a citizen
+# Parser to check that required arguments are sent to get a citizen from the database
 citizen_get_args = reqparse.RequestParser()
 citizen_get_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 
-# Parser to check that required arguments are sent to update a citizen
+# Parser to check that required arguments are sent to update a citizen in the database
 citizen_patch_args = reqparse.RequestParser()
 citizen_patch_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 citizen_patch_args.add_argument("email", type=str, help="Email is required in string format")
@@ -32,7 +32,7 @@ citizen_patch_args.add_argument("mobile_num", type=str, help="Mobile number is r
 citizen_patch_args.add_argument("medical_aid", type=str, help="Medical aid number is required to be in string format")
 citizen_patch_args.add_argument("citizen_address", type=str, help="Address is required in string format")
 
-# Parser to check that required arguments are sent to delete a citizen
+# Parser to check that required arguments are sent to delete a citizen from the database
 citizen_del_args = reqparse.RequestParser()
 citizen_del_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 
@@ -48,7 +48,7 @@ resource_fields = {
     'citizen_address': fields.String
 }
 
-#Class to handle methods related to citizens
+# Class to handle methods related to citizens
 class CitizenResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
@@ -76,7 +76,7 @@ class CitizenResource(Resource):
 # Add resource to the API
 citizen_api.add_resource(CitizenResource, "")
 
-# Get a citizen by their ID
+# Get a citizen by their ID and return the full database entry
 def getCitizen(args):
     result = Citizen.query.filter_by(id_citizen=args["id_citizen"]).first()
     if result:
@@ -127,7 +127,7 @@ def updateCitizen(args):
             result.citizen_address = args["citizen_address"]
         db.session.commit()
 
-# delete from the database
+# Delete a citizen from the database
 def deleteCitizen(args):
     result = Citizen.query.filter_by(id_citizen=args["id_citizen"]).first()
     if not result:

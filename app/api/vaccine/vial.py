@@ -5,21 +5,21 @@ from .. import dataHandler
 from app import db
 
 
-# Parser to check if the required arguments are sent to get vial data
+# Parser to check if the required arguments are sent to get vial data from the database
 vial_get_args = reqparse.RequestParser()
 vial_get_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
 
-# Parser to check if the required arguments are sent to get vial data
+# Parser to check if the required arguments are sent to add vial data to the database
 vial_put_args = reqparse.RequestParser()
 vial_put_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
 vial_put_args.add_argument("vaccine_id", type=int, help="The ID of the vaccine in Int format", required=True)
 
-# Parser to check if the required arguments are sent to get vial data
+# Parser to check if the required arguments are sent to update vial data in the database
 vial_patch_args = reqparse.RequestParser()
 vial_patch_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
 vial_patch_args.add_argument("vaccine_id", type=int, help="The ID of the vaccine in Int format", required=True)
 
-# Parser to check if the required arguments are sent to get vial data
+# Parser to check if the required arguments are sent to delete vial data from the database
 vial_del_args = reqparse.RequestParser()
 vial_del_args.add_argument("id_vial", type=str, help="The ID of the vial in String format", required=True)
 

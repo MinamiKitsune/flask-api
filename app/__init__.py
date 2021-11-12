@@ -6,7 +6,7 @@ def create_app():
     # Create the flask application
     app = Flask(__name__)
 
-    # Database
+    # Configure the database
     app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///vaccine.db'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     global db

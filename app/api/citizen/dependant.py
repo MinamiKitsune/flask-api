@@ -6,7 +6,7 @@ from .. import dataHandler, smsHandler
 from app import db
 
 
-# Parser to check that required arguments are sent to add dependant
+# Parser to check that required arguments are sent to add dependant to the database
 dependant_put_args = reqparse.RequestParser()
 dependant_put_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 dependant_put_args.add_argument("email", type=str, help="Email is required in string format", required=True)
@@ -18,11 +18,11 @@ dependant_put_args.add_argument("medical_aid", type=str, help="Medical aid numbe
 dependant_put_args.add_argument("citizen_address", type=str, help="Address is required in string format")
 dependant_put_args.add_argument("parent_id", type=str, help="The ID of the parent in string format", required=True)
 
-# Parser to check that required arguments are sent to get a dependant
+# Parser to check that required arguments are sent to get a dependant from the database
 dependant_get_args = reqparse.RequestParser()
 dependant_get_args.add_argument("parent_id", type=str, help="The ID of the parent in string format", required=True)
 
-# Parser to check that required arguments are sent to update a dependant
+# Parser to check that required arguments are sent to update a dependant in the database
 dependant_patch_args = reqparse.RequestParser()
 dependant_patch_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 dependant_patch_args.add_argument("email", type=str, help="Email is required in string format")
@@ -34,7 +34,7 @@ dependant_patch_args.add_argument("medical_aid", type=str, help="Medical aid num
 dependant_patch_args.add_argument("citizen_address", type=str, help="Address is required in string format")
 dependant_patch_args.add_argument("parent_id", type=str, help="The ID of the parent in string format")
 
-# Parser to check that required arguments are sent to delete a citizen
+# Parser to check that required arguments are sent to delete a citizen from the database
 dependant_del_args = reqparse.RequestParser()
 dependant_del_args.add_argument("id_citizen", type=str, help="The ID of the citizen in string format", required=True)
 
@@ -51,7 +51,7 @@ resource_fields = {
     'parent_id': fields.String
 }
 
-#Class to handle methods related to dependants
+# Class to handle methods related to dependants
 class DependantResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
@@ -79,7 +79,7 @@ class DependantResource(Resource):
 # Add resource to the API
 dependant_api.add_resource(DependantResource, "")
 
-# Get a dependant by their ID
+# Get a dependant by their ID and return the full database entry
 def getDependant(args):
     result = Citizen.query.filter_by(parent_id=args["parent_id"]).all()
     if result:
@@ -137,7 +137,7 @@ def updateDependant(args):
             result.parent_id = args["parent_id"]
         db.session.commit()
 
-# delete from the database
+# Delete a dependant from the database
 def deleteDependant(args):
     result = Citizen.query.filter_by(id_citizen=args["id_citizen"]).first()
     if not result:

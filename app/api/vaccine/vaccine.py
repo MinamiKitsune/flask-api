@@ -5,7 +5,7 @@ from .. import dataHandler
 from app import db
 
 
-# Parser to check if the required arguments are sent
+# Parser to check if the required arguments are sent to add a vaccine to the database
 vaccine_put_args = reqparse.RequestParser()
 vaccine_put_args.add_argument("vaccine_name", type=str, help="The name of the vaccine is required in String format", required=True)
 vaccine_put_args.add_argument("target_disease", type=str, help="The name of the target disease that the vaccine is made for is required in String format", required=True)
@@ -18,7 +18,7 @@ vaccine_get_args.add_argument("id_vaccine", type=int, help="The ID of the vaccin
 vaccine_get_args.add_argument("vaccine_name", type=str, help="The name of the vaccine is required in String format")
 vaccine_get_args.add_argument("target_disease", type=str, help="The name of the target disease that the vaccine is made for is required in String format")
 
-# Parser to check required arguments are sent to update
+# Parser to check required arguments are sent to update a vaccine in the database
 vaccine_patch_args = reqparse.RequestParser()
 vaccine_patch_args.add_argument("id_vaccine", type=int, help="The ID of the vaccine in Int format", required=True)
 vaccine_patch_args.add_argument("vaccine_name", type=str, help="The name of the vaccine is required in String format")
@@ -26,7 +26,7 @@ vaccine_patch_args.add_argument("target_disease", type=str, help="The name of th
 vaccine_patch_args.add_argument("number_to_administer", type=int, help="The number of dossages the vaccine requires is required in Int format")
 vaccine_patch_args.add_argument("dosage_interval", type=int, help="The number of days that need to elapse before the next dose is administered")
 
-# Parser to check required arguments are sent to delete
+# Parser to check required arguments are sent to delete a vaccine from the database
 vaccine_del_args = reqparse.RequestParser()
 vaccine_del_args.add_argument("id_vaccine", type=int, help="The ID of the vaccine in Int format", required=True)
 
@@ -110,7 +110,7 @@ def getVaccine(args):
     else:
         abort(400, message="Not the correct arguments specified; only id_vaccine, vaccine_name or target_disease can be used")
 
-# update the database
+# Update a vaccine in the database
 def updateVaccine(args):
     result = Vaccine.query.filter_by(id_vaccine=args["id_vaccine"]).first()
     if not result:
@@ -126,7 +126,7 @@ def updateVaccine(args):
             result.dosage_interval = args["dosage_interval"]
         db.session.commit()
 
-# delete from the database
+# Delete from the database
 def deleteVaccine(args):
     result = Vaccine.query.filter_by(id_vaccine=args["id_vaccine"]).first()
     if not result:
