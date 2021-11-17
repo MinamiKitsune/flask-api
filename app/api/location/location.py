@@ -1,60 +1,60 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from . import location_api
-from ..databaseModels import Location
-from .. import dataHandler
+from ..database_models import Location
+from .. import data_handler
 from app import db
-
 
 # Parser to check if the required arguments are sent to get location data from the database
 location_get_args = reqparse.RequestParser()
 location_get_args.add_argument("id_location", type=str,
-help="The ID of the location in Int format")
+                               help="The ID of the location in Int format")
 location_get_args.add_argument("location_address", type=str,
-help="The address of the location in String format")
+                               help="The address of the location in String format")
 location_get_args.add_argument("country", type=str,
-help="The country of the location in String format")
+                               help="The country of the location in String format")
 location_get_args.add_argument("zip_code", type=str,
-help="The zip code of the location in String format")
+                               help="The zip code of the location in String format")
 location_get_args.add_argument("name_of_place", type=str,
-help="The name of the location in String format")
+                               help="The name of the location in String format")
 
 # Parser to check if the required arguments are sent to add a new location to the database
 location_put_args = reqparse.RequestParser()
 location_put_args.add_argument("location_address", type=str, required=True,
-help="The address of the location in String format is required")
-location_put_args.add_argument("country",type=str, required=True,
-help="The country of the location in String format is required")
+                               help="The address of the location in String format is required")
+location_put_args.add_argument("country", type=str, required=True,
+                               help="The country of the location in String format is required")
 location_put_args.add_argument("zip_code", type=str, required=True,
-help="The zip code of the location in String format is required")
+                               help="The zip code of the location in String format is required")
 location_put_args.add_argument("name_of_place", type=str, required=True,
-help="The name of the location in String format is required")
+                               help="The name of the location in String format is required")
 
 # Parser to check if the required arguments are sent to update a location in the database
 location_patch_args = reqparse.RequestParser()
 location_patch_args.add_argument("id_location", type=str, required=True,
-help="The ID of the location in Int format is required")
+                                 help="The ID of the location in Int format is required")
 location_patch_args.add_argument("location_address", type=str,
-help="The address of the location in String format")
+                                 help="The address of the location in String format")
 location_patch_args.add_argument("country", type=str,
-help="The country of the location in String format")
+                                 help="The country of the location in String format")
 location_patch_args.add_argument("zip_code", type=str,
-help="The zip code of the location in String format")
+                                 help="The zip code of the location in String format")
 location_patch_args.add_argument("name_of_place", type=str,
-help="The name of the location in String format")
+                                 help="The name of the location in String format")
 
 # Parser to check if the required arguments are sent to delete a location from the database
 location_del_args = reqparse.RequestParser()
 location_del_args.add_argument("id_location", type=str, required=True,
-help="The ID of the location in Int format is required")
+                               help="The ID of the location in Int format is required")
 
-#Fields to marshal the responses
+# Fields to marshal the responses
 resource_fields = {
-    'id_location' : fields.Integer,
-    'location_address' : fields.String,
-    'country' : fields.String,
-    'zip_code' : fields.String,
-    'name_of_place' : fields.String
+    'id_location': fields.Integer,
+    'location_address': fields.String,
+    'country': fields.String,
+    'zip_code': fields.String,
+    'name_of_place': fields.String
 }
+
 
 # Class to handle methods related to location
 class LocationResource(Resource):
@@ -62,50 +62,53 @@ class LocationResource(Resource):
     def get(self):
         try:
             args = location_get_args.parse_args()
-            dataHandler.cleanData(args)
-            if dataHandler.checkIfEmpty(args):
-                return getAllLocations(), 200
+            data_handler.clean_data(args)
+            if data_handler.check_if_empty(args):
+                return get_all_locations(), 200
             else:
-                return getLocation(args), 200
+                return get_location(args), 200
         except Exception:
-            abort(500, message="An internal server error has occured, please try again later.")
-    
+            abort(500, message="An internal server error has occurred, please try again later.")
+
     def put(self):
         try:
             args = location_put_args.parse_args()
-            dataHandler.cleanData(args)
-            addLocation(args)
-            return { "message": "Added to database" }, 201
+            data_handler.clean_data(args)
+            add_location(args)
+            return {"message": "Added to database"}, 201
         except Exception:
-            abort(500, message="An internal server error has occured, please try again later.")
-    
+            abort(500, message="An internal server error has occurred, please try again later.")
+
     def patch(self):
         try:
             args = location_patch_args.parse_args()
-            dataHandler.cleanData(args)
-            updateLocation(args)
-            return { "message": "Updated the database" }, 200
+            data_handler.clean_data(args)
+            update_location(args)
+            return {"message": "Updated the database"}, 200
         except Exception:
-            abort(500, message="An internal server error has occured, please try again later.")
-    
+            abort(500, message="An internal server error has occurred, please try again later.")
+
     def delete(self):
         try:
             args = location_del_args.parse_args()
-            dataHandler.cleanData(args)
-            deleteLocation(args)
-            return { "message": "Deleted from database" }, 204
+            data_handler.clean_data(args)
+            delete_location(args)
+            return {"message": "Deleted from database"}, 204
         except Exception:
-            abort(500, message="An internal server error has occured, please try again later.")
+            abort(500, message="An internal server error has occurred, please try again later.")
+
 
 # Add resource to the API
 location_api.add_resource(LocationResource, '')
 
+
 # Get all of the locations in the database
-def getAllLocations():
+def get_all_locations():
     return Location.query.all()
 
+
 # Get a single location from the database based on the arguments provided
-def getLocation(args):
+def get_location(args):
     if args["id_location"]:
         result = Location.query.filter_by(id_location=args["id_location"]).first()
         if result:
@@ -141,21 +144,25 @@ def getLocation(args):
         else:
             abort(404, message="A location with this name does not exist")
     else:
-        abort(400, message="Not the correct arguments specified; only id_location, location_address, country, zip_code or name_of_place can be used")
+        abort(400,
+              message="Not the correct arguments specified; "
+                      "only id_location, location_address, country, zip_code or name_of_place can be used")
+
 
 # Add a location to the database
-def addLocation(args):
-    result = Location.query.filter_by(location_address = args["location_address"]).first()
+def add_location(args):
+    result = Location.query.filter_by(location_address=args["location_address"]).first()
     if result:
         abort(409, message="A location with this address already exists")
     else:
-        new_location = Location(location_address = args["location_address"], country = args["country"],
-        zip_code = args["zip_code"], name_of_place = args["name_of_place"])
+        new_location = Location(location_address=args["location_address"], country=args["country"],
+                                zip_code=args["zip_code"], name_of_place=args["name_of_place"])
         db.session.add(new_location)
         db.session.commit()
 
+
 # Update a location in the database
-def updateLocation(args):
+def update_location(args):
     result = Location.query.filter_by(id_location=args["id_location"]).first()
     if not result:
         abort(404, message="Location with this ID does not exist, cannot update")
@@ -172,8 +179,9 @@ def updateLocation(args):
             result.name_of_place = args["name_of_place"]
         db.session.commit()
 
+
 # Delete a location in the database
-def deleteLocation(args):
+def delete_location(args):
     result = Location.query.filter_by(id_location=args["id_location"]).first()
     if not result:
         abort(404, message="Location with this ID does not exist, cannot delete")

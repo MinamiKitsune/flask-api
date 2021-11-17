@@ -133,3 +133,6 @@ dmypy.json
 
 #database
 vaccine.db
+
+#idea
+.idea/

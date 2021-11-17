@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from . import vial_api
-from ..databaseModels import Vial, Vaccine
-from .. import dataHandler
+from ..database_models import Vial, Vaccine
+from .. import data_handler
 from app import db
 
 
@@ -45,7 +45,7 @@ class VialResource(Resource):
     def get(self):
         try:
             args = vial_get_args.parse_args()
-            dataHandler.removeSpace(args)
+            data_handler.remove_space(args)
             return getVial(args), 200
         except Exception:
             abort(500, message="An internal server error has occured, please try again later.")
@@ -53,7 +53,7 @@ class VialResource(Resource):
     def put(self):
         try:
             args = vial_put_args.parse_args()
-            dataHandler.removeSpace(args)
+            data_handler.remove_space(args)
             addVial(args)
             return { "message": "Added to database" }, 201
         except Exception:
@@ -62,7 +62,7 @@ class VialResource(Resource):
     def patch(self):
         try:
             args = vial_patch_args.parse_args()
-            dataHandler.removeSpace(args)
+            data_handler.remove_space(args)
             updateVial(args)
             return { "message": "Updated the database" }, 200
         except Exception:
@@ -71,7 +71,7 @@ class VialResource(Resource):
     def delete(self):
         try:
             args = vial_del_args.parse_args()
-            dataHandler.removeSpace(args)
+            data_handler.remove_space(args)
             deleteVial(args)
             return { "message": "Deleted from database" }, 204
         except Exception:

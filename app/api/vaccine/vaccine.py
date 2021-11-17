@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from . import vaccine_api
-from ..databaseModels import Vaccine
-from .. import dataHandler
+from ..database_models import Vaccine
+from .. import data_handler
 from app import db
 
 
@@ -58,8 +58,8 @@ class VaccineResource(Resource):
     def get(self):
         try:
             args = vaccine_get_args.parse_args()
-            dataHandler.cleanData(args)
-            if dataHandler.checkIfEmpty(args):
+            data_handler.clean_data(args)
+            if data_handler.check_if_empty(args):
                 return getAllVaccine(), 200
             else:
                 return getVaccine(args), 200
@@ -69,7 +69,7 @@ class VaccineResource(Resource):
     def put(self):
         try:
             args = vaccine_put_args.parse_args()
-            dataHandler.cleanData(args)
+            data_handler.clean_data(args)
             if args["number_to_administer"] > 1 and args["dosage_interval"] == None:
                 abort(400, message="A number of dosages greater than 1 is specified with no dosage interval, please add a dosage interval")
             else:
@@ -81,7 +81,7 @@ class VaccineResource(Resource):
     def patch(self):
         try:
             args = vaccine_patch_args.parse_args()
-            dataHandler.cleanData(args)
+            data_handler.clean_data(args)
             updateVaccine(args)
             return { "message": "Updated the database" }, 200
         except Exception:
@@ -90,7 +90,7 @@ class VaccineResource(Resource):
     def delete(self):
         try:
             args = vaccine_patch_args.parse_args()
-            dataHandler.cleanData(args)
+            data_handler.clean_data(args)
             deleteVaccine(args)
             return { "message": "Deleted from database" }, 204
         except Exception:

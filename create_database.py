@@ -1,6 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 
+
 # create connection
 def create_connection(db_file):
     conn = None
@@ -11,6 +12,7 @@ def create_connection(db_file):
         print(e)
 
     return conn
+
 
 # create the table
 def create_table(conn, create_table_sql):
@@ -36,7 +38,7 @@ def main():
                                     parent_id TEXT,
                                     FOREIGN KEY (parent_id) REFERENCES citizen (id_citizen)
                                 );"""
-    
+
     sql_create_vaccine_table = """CREATE TABLE IF NOT EXISTS vaccine (
                                     id_vaccine INTEGER PRIMARY KEY,
                                     vaccine_name TEXT NOT NULL,
@@ -85,7 +87,7 @@ def main():
         create_table(conn, sql_create_location_table)
         create_table(conn, sql_create_vaccination_table)
     else:
-        prINTEGER("Error")
+        print("Error")
 
 
 if __name__ == '__main__':

@@ -1,25 +1,28 @@
 # Check if the arguments are empty
-def checkIfEmpty(args):
+def check_if_empty(args):
     for x in args:
         if args[x] is not None:
             print(args[x])
             return False
     return True
 
-# Removes whitespaces and lowercases the arguments from clients
-def cleanData(args):
+
+# Removes whitespaces and lowercase the arguments from clients
+def clean_data(args):
     for x in args:
         if isinstance(args[x], str):
             args[x] = str(args[x]).lower().strip()
 
+
 # Removes whitespaces from the arguments provided by the clients
-def removeSpace(args):
+def remove_space(args):
     for x in args:
         if isinstance(args[x], str):
             args[x] = str(args[x]).strip()
 
-# Lowercases the arguments from clients
-def removeUpper(args):
+
+# Lowercase the arguments from clients
+def remove_upper(args):
     for x in args:
         if isinstance(args[x], str):
             args[x] = str(args[x]).lower()
