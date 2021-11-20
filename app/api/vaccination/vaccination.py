@@ -144,7 +144,7 @@ def get_vaccination(args):
 # Add a vaccination to the database
 def add_vaccination(args):
     if args["side_effects"] and args["description_side_effects"] is None:
-        abort(400, "Side effects are true and no description has been given, please add a description")
+        abort(400, message="Side effects are true and no description has been given, please add a description")
     else:
         if vial_exists(args):
             exists, mobile = citizen_exists(args)
