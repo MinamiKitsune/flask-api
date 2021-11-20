@@ -16,7 +16,7 @@ def create_app():
 
     # Import all of the blueprints
     from .api import test_bp
-    from .api.vaccine import vaccine_BP
+    from .api.vaccine import vaccine_bp
     from .api.vaccination import vaccination_bp
     from .api.location import location_bp
     from .api.citizen import citizen_bp
@@ -26,7 +26,7 @@ def create_app():
 
     # Register all of the blueprints to the parent
     api_bp.register_blueprint(test_bp)
-    api_bp.register_blueprint(vaccine_BP)
+    api_bp.register_blueprint(vaccine_bp)
     api_bp.register_blueprint(vaccination_bp)
     api_bp.register_blueprint(location_bp)
     api_bp.register_blueprint(citizen_bp)
