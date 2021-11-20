@@ -60,8 +60,8 @@ resource_fields = {
 
 # This class will handle all of the methods related to the the vaccines
 class VaccineResource(Resource):
-    @marshal_with(resource_fields)
     @token_required
+    @marshal_with(resource_fields)
     def get(self):
         args = vaccine_get_args.parse_args()
         data_handler.clean_data(args)

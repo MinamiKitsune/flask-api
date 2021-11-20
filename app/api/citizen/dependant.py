@@ -77,8 +77,8 @@ resource_fields = {
 
 # Class to handle methods related to dependants
 class DependantResource(Resource):
-    @marshal_with(resource_fields)
     @token_required
+    @marshal_with(resource_fields)
     def get(self):
         args = dependant_get_args.parse_args()
         data_handler.clean_data(args)

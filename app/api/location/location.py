@@ -60,8 +60,8 @@ resource_fields = {
 
 # Class to handle methods related to location
 class LocationResource(Resource):
-    @marshal_with(resource_fields)
     @token_required
+    @marshal_with(resource_fields)
     def get(self):
         args = location_get_args.parse_args()
         data_handler.clean_data(args)

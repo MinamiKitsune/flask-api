@@ -79,8 +79,8 @@ resource_fields = {
 # This class will handle all of the methods related to the vaccination event
 # where a citizen will be vaccinated
 class VaccinationResource(Resource):
-    @marshal_with(resource_fields)
     @token_required
+    @marshal_with(resource_fields)
     def get(self):
         args = vaccination_get_args.parse_args()
         data_handler.remove_space(args)

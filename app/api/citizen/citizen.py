@@ -72,8 +72,8 @@ resource_fields = {
 
 # Class to handle methods related to citizens
 class CitizenResource(Resource):
-    @marshal_with(resource_fields)
     @token_required
+    @marshal_with(resource_fields)
     def get(self):
         args = citizen_get_args.parse_args()
         data_handler.clean_data(args)

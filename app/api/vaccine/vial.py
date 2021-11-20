@@ -43,8 +43,8 @@ resource_fields = {
 
 # This class will handle all of the methods related to the vials of a vaccine
 class VialResource(Resource):
-    @marshal_with(resource_fields)
     @token_required
+    @marshal_with(resource_fields)
     def get(self):
         args = vial_get_args.parse_args()
         data_handler.remove_space(args)
