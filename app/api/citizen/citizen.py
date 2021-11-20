@@ -76,12 +76,9 @@ class CitizenResource(Resource):
     @token_required
     def get(self):
         try:
-            if data_handler.check_if_admin(request.headers['x-access-token']):
-                args = citizen_get_args.parse_args()
-                data_handler.clean_data(args)
-                return get_citizen(args), 200
-            else:
-                abort(403, message="Forbidden.")
+            args = citizen_get_args.parse_args()
+            data_handler.clean_data(args)
+            return get_citizen(args), 200
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
@@ -108,10 +105,13 @@ class CitizenResource(Resource):
     @token_required
     def delete(self):
         try:
-            args = citizen_del_args.parse_args()
-            data_handler.clean_data(args)
-            delete_citizen(args)
-            return {"message": "Deleted from database"}, 204
+            if data_handler.check_if_admin(request.headers['x-access-token']):
+                args = citizen_del_args.parse_args()
+                data_handler.clean_data(args)
+                delete_citizen(args)
+                return {"message": "Deleted from database"}, 204
+            else:
+                abort(403, message="Forbidden.")
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
