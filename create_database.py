@@ -75,6 +75,14 @@ def main():
                                     FOREIGN KEY (location_id) REFERENCES location (id_location)
                                 );"""
 
+    sql_create_user_table = """ CREATE TABLE IF NOT EXISTS user (
+                                id_user INTEGER PRIMARY KEY,
+                                public_id TEXT NOT NULL,
+                                username TEXT NOT NULL,
+                                password TEXT NOT NULL,
+                                admin INTEGER NOT NULL
+                                );"""
+
     # create a database connection
     conn = create_connection(database)
 
@@ -86,6 +94,7 @@ def main():
         create_table(conn, sql_create_vial_table)
         create_table(conn, sql_create_location_table)
         create_table(conn, sql_create_vaccination_table)
+        create_table(conn, sql_create_user_table)
     else:
         print("Error")
 
