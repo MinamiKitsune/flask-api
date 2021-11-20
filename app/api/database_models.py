@@ -43,3 +43,11 @@ class Vaccination(db.Model):
     dosage_number = db.Column(db.Integer, nullable=False)
     side_effects = db.Column(db.Boolean, nullable=False)
     description_side_effects = db.Column(db.Text, nullable=True)
+
+
+class User(db.Model):
+    id_user = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.Text, unique=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.Text, nullable=False)
+    admin = db.Column(db.Boolean, nullable=False)
