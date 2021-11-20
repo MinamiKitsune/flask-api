@@ -98,7 +98,7 @@ class DependantResource(Resource):
             args = dependant_patch_args.parse_args()
             data_handler.clean_data(args)
             update_dependant(args)
-            return {"message": "Updated the database"}, 20
+            return {"message": "Updated the database"}, 200
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
