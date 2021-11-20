@@ -39,7 +39,7 @@ class UserResource(Resource):
     def put(self):
         args = user_put_args.parse_args()
         data_handler.remove_space(args)
-        add_user(args)
+        add_user(args, "user")
         return {"message": "Added to database"}, 201
 
 
@@ -49,7 +49,7 @@ class AdminResource(Resource):
         if data_handler.check_if_admin(request.headers['x-access-token']):
             args = user_put_args.parse_args()
             data_handler.remove_space(args)
-            add_admin(args)
+            add_user(args, "admin")
             return {"message": "Added to database"}, 201
         else:
             abort(403, message="Forbidden.")
@@ -61,15 +61,17 @@ user_api.add_resource(AdminResource, "/admin")
 user_api.add_resource(UserResource, '')
 
 
-def add_user(args):
-    hashed_password = generate_password_hash(args['password'], method='sha256')
-    new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password, admin=False)
-    db.session.add(new_user)
-    db.session.commit()
-
-
-def add_admin(args):
-    hashed_password = generate_password_hash(args['password'], method='sha256')
-    new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password, admin=True)
-    db.session.add(new_user)
-    db.session.commit()
+def add_user(args, user_class):
+    result = User.query.filter_by(username=args["username"]).first()
+    if result:
+        abort(409, message="A user with this username already exists")
+    else:
+        hashed_password = generate_password_hash(args['password'], method='sha256')
+        if user_class is "admin":
+            new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password,
+                            admin=True)
+        else:
+            new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password,
+                            admin=False)
+        db.session.add(new_user)
+        db.session.commit()
