@@ -67,7 +67,7 @@ def add_user(args, user_class):
         abort(409, message="A user with this username already exists")
     else:
         hashed_password = generate_password_hash(args['password'], method='sha256')
-        if user_class is "admin":
+        if user_class == "admin":
             new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password,
                             admin=True)
         else:
