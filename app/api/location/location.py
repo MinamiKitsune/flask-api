@@ -63,48 +63,36 @@ class LocationResource(Resource):
     @marshal_with(resource_fields)
     @token_required
     def get(self):
-        try:
-            args = location_get_args.parse_args()
-            data_handler.clean_data(args)
-            if data_handler.check_if_empty(args):
-                return get_all_locations(), 200
-            else:
-                return get_location(args), 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_get_args.parse_args()
+        data_handler.clean_data(args)
+        if data_handler.check_if_empty(args):
+            return get_all_locations(), 200
+        else:
+            return get_location(args), 200
 
     @token_required
     def put(self):
-        try:
-            args = location_put_args.parse_args()
-            data_handler.clean_data(args)
-            add_location(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_put_args.parse_args()
+        data_handler.clean_data(args)
+        add_location(args)
+        return {"message": "Added to database"}, 201
 
     @token_required
     def patch(self):
-        try:
-            args = location_patch_args.parse_args()
-            data_handler.clean_data(args)
-            update_location(args)
-            return {"message": "Updated the database"}, 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_patch_args.parse_args()
+        data_handler.clean_data(args)
+        update_location(args)
+        return {"message": "Updated the database"}, 200
 
     @token_required
     def delete(self):
-        try:
-            if data_handler.check_if_admin(request.headers['x-access-token']):
-                args = location_del_args.parse_args()
-                data_handler.clean_data(args)
-                delete_location(args)
-                return {"message": "Deleted from database"}, 204
-            else:
-                abort(403, message="Forbidden.")
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        if data_handler.check_if_admin(request.headers['x-access-token']):
+            args = location_del_args.parse_args()
+            data_handler.clean_data(args)
+            delete_location(args)
+            return {"message": "Deleted from database"}, 204
+        else:
+            abort(403, message="Forbidden.")
 
 
 # Add resource to the API
