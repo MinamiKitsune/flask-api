@@ -37,28 +37,22 @@ class LoginResource(Resource):
 
 class UserResource(Resource):
     def put(self):
-        try:
-            args = user_put_args.parse_args()
-            data_handler.remove_space(args)
-            add_user(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = user_put_args.parse_args()
+        data_handler.remove_space(args)
+        add_user(args)
+        return {"message": "Added to database"}, 201
 
 
 class AdminResource(Resource):
     @token_required
     def put(self):
-        try:
-            if data_handler.check_if_admin(request.headers['x-access-token']):
-                args = user_put_args.parse_args()
-                data_handler.remove_space(args)
-                add_admin(args)
-                return {"message": "Added to database"}, 201
-            else:
-                abort(403, message="Forbidden.")
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        if data_handler.check_if_admin(request.headers['x-access-token']):
+            args = user_put_args.parse_args()
+            data_handler.remove_space(args)
+            add_admin(args)
+            return {"message": "Added to database"}, 201
+        else:
+            abort(403, message="Forbidden.")
 
 
 # Add the resources to the API
