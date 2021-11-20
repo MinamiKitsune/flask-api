@@ -72,39 +72,27 @@ resource_fields = {
 class CitizenResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        try:
-            args = citizen_get_args.parse_args()
-            data_handler.clean_data(args)
-            return get_citizen(args), 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = citizen_get_args.parse_args()
+        data_handler.clean_data(args)
+        return get_citizen(args), 200
 
     def put(self):
-        try:
-            args = citizen_put_args.parse_args()
-            data_handler.clean_data(args)
-            add_citizen(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = citizen_put_args.parse_args()
+        data_handler.clean_data(args)
+        add_citizen(args)
+        return {"message": "Added to database"}, 201
 
     def patch(self):
-        try:
-            args = citizen_patch_args.parse_args()
-            data_handler.clean_data(args)
-            update_citizen(args)
-            return {"message": "Updated the database"}, 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = citizen_patch_args.parse_args()
+        data_handler.clean_data(args)
+        update_citizen(args)
+        return {"message": "Updated the database"}, 200
 
     def delete(self):
-        try:
-            args = citizen_del_args.parse_args()
-            data_handler.clean_data(args)
-            delete_citizen(args)
-            return {"message": "Deleted from database"}, 204
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = citizen_del_args.parse_args()
+        data_handler.clean_data(args)
+        delete_citizen(args)
+        return {"message": "Deleted from database"}, 204
 
 
 # Add resource to the API

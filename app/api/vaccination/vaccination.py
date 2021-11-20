@@ -79,39 +79,27 @@ resource_fields = {
 class VaccinationResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        try:
-            args = vaccination_get_args.parse_args()
-            data_handler.remove_space(args)
-            return get_vaccination(args), 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccination_get_args.parse_args()
+        data_handler.remove_space(args)
+        return get_vaccination(args), 200
 
     def put(self):
-        try:
-            args = vaccination_put_args.parse_args()
-            data_handler.remove_space(args)
-            add_vaccination(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccination_put_args.parse_args()
+        data_handler.remove_space(args)
+        add_vaccination(args)
+        return {"message": "Added to database"}, 201
 
     def patch(self):
-        try:
-            args = vaccination_patch_args.parse_args()
-            data_handler.remove_space(args)
-            update_vaccination(args)
-            return {"message": "Updated the database"}, 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccination_patch_args.parse_args()
+        data_handler.remove_space(args)
+        update_vaccination(args)
+        return {"message": "Updated the database"}, 200
 
     def delete(self):
-        try:
-            args = vaccination_del_args.parse_args()
-            data_handler.remove_space(args)
-            delete_vaccination(args)
-            return {"message": "Deleted from database"}, 204
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccination_del_args.parse_args()
+        data_handler.remove_space(args)
+        delete_vaccination(args)
+        return {"message": "Deleted from database"}, 204
 
 
 # Add the resource to the API

@@ -60,42 +60,30 @@ resource_fields = {
 class LocationResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        try:
-            args = location_get_args.parse_args()
-            data_handler.clean_data(args)
-            if data_handler.check_if_empty(args):
-                return get_all_locations(), 200
-            else:
-                return get_location(args), 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_get_args.parse_args()
+        data_handler.clean_data(args)
+        if data_handler.check_if_empty(args):
+            return get_all_locations(), 200
+        else:
+            return get_location(args), 200
 
     def put(self):
-        try:
-            args = location_put_args.parse_args()
-            data_handler.clean_data(args)
-            add_location(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_put_args.parse_args()
+        data_handler.clean_data(args)
+        add_location(args)
+        return {"message": "Added to database"}, 201
 
     def patch(self):
-        try:
-            args = location_patch_args.parse_args()
-            data_handler.clean_data(args)
-            update_location(args)
-            return {"message": "Updated the database"}, 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_patch_args.parse_args()
+        data_handler.clean_data(args)
+        update_location(args)
+        return {"message": "Updated the database"}, 200
 
     def delete(self):
-        try:
-            args = location_del_args.parse_args()
-            data_handler.clean_data(args)
-            delete_location(args)
-            return {"message": "Deleted from database"}, 204
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = location_del_args.parse_args()
+        data_handler.clean_data(args)
+        delete_location(args)
+        return {"message": "Deleted from database"}, 204
 
 
 # Add resource to the API

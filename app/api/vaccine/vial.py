@@ -43,39 +43,27 @@ resource_fields = {
 class VialResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        try:
-            args = vial_get_args.parse_args()
-            data_handler.remove_space(args)
-            return get_vial(args), 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vial_get_args.parse_args()
+        data_handler.remove_space(args)
+        return get_vial(args), 200
 
     def put(self):
-        try:
-            args = vial_put_args.parse_args()
-            data_handler.remove_space(args)
-            add_vial(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vial_put_args.parse_args()
+        data_handler.remove_space(args)
+        add_vial(args)
+        return {"message": "Added to database"}, 201
 
     def patch(self):
-        try:
-            args = vial_patch_args.parse_args()
-            data_handler.remove_space(args)
-            update_vial(args)
-            return {"message": "Updated the database"}, 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vial_patch_args.parse_args()
+        data_handler.remove_space(args)
+        update_vial(args)
+        return {"message": "Updated the database"}, 200
 
     def delete(self):
-        try:
-            args = vial_del_args.parse_args()
-            data_handler.remove_space(args)
-            delete_vial(args)
-            return {"message": "Deleted from database"}, 204
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vial_del_args.parse_args()
+        data_handler.remove_space(args)
+        delete_vial(args)
+        return {"message": "Deleted from database"}, 204
 
 
 # Add the resource to the API

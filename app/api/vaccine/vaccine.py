@@ -60,47 +60,35 @@ resource_fields = {
 class VaccineResource(Resource):
     @marshal_with(resource_fields)
     def get(self):
-        try:
-            args = vaccine_get_args.parse_args()
-            data_handler.clean_data(args)
-            if data_handler.check_if_empty(args):
-                return get_all_vaccine(), 200
-            else:
-                return get_vaccine(args), 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccine_get_args.parse_args()
+        data_handler.clean_data(args)
+        if data_handler.check_if_empty(args):
+            return get_all_vaccine(), 200
+        else:
+            return get_vaccine(args), 200
 
     def put(self):
-        try:
-            args = vaccine_put_args.parse_args()
-            data_handler.clean_data(args)
-            if args["number_to_administer"] > 1 and args["dosage_interval"] is None:
-                abort(400,
-                      message="A number of dosages greater than 1 is specified with no dosage interval, "
-                              "please add a dosage interval")
-            else:
-                add_vaccine(args)
-            return {"message": "Added to database"}, 201
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccine_put_args.parse_args()
+        data_handler.clean_data(args)
+        if args["number_to_administer"] > 1 and args["dosage_interval"] is None:
+            abort(400,
+                  message="A number of dosages greater than 1 is specified with no dosage interval, "
+                          "please add a dosage interval")
+        else:
+            add_vaccine(args)
+        return {"message": "Added to database"}, 201
 
     def patch(self):
-        try:
-            args = vaccine_patch_args.parse_args()
-            data_handler.clean_data(args)
-            update_vaccine(args)
-            return {"message": "Updated the database"}, 200
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccine_patch_args.parse_args()
+        data_handler.clean_data(args)
+        update_vaccine(args)
+        return {"message": "Updated the database"}, 200
 
     def delete(self):
-        try:
-            args = vaccine_patch_args.parse_args()
-            data_handler.clean_data(args)
-            delete_vaccine(args)
-            return {"message": "Deleted from database"}, 204
-        except Exception:
-            abort(500, message="An internal server error has occurred, please try again later.")
+        args = vaccine_patch_args.parse_args()
+        data_handler.clean_data(args)
+        delete_vaccine(args)
+        return {"message": "Deleted from database"}, 204
 
 
 # Add the resource to the API
