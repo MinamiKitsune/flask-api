@@ -8,6 +8,7 @@ flask = "*"
 sqlalchemy = "*"
 flask-restful = "*"
 flask-sqlalchemy = "*"
+pyjwt = "==1.7.1"
 
 [dev-packages]
 
