@@ -156,6 +156,7 @@ def get_location(args):
         abort(400,
               message="Not the correct arguments specified; "
                       "only id_location, location_address, country, zip_code or name_of_place can be used")
+    abort(404, message="This location does not exist")
 
 
 # Add a location to the database

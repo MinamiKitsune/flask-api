@@ -156,6 +156,7 @@ def get_vaccine(args):
         abort(400,
               message="Not the correct arguments specified; only id_vaccine, "
                       "vaccine_name or target_disease can be used")
+    abort(404, message="This vaccine does not exist")
 
 
 # Update a vaccine in the database
