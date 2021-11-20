@@ -1,6 +1,8 @@
+from flask import request
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from . import vial_api
 from ..database_models import Vial, Vaccine
+from ..decorator import token_required
 from .. import data_handler
 from app import db
 
@@ -42,6 +44,7 @@ resource_fields = {
 # This class will handle all of the methods related to the vials of a vaccine
 class VialResource(Resource):
     @marshal_with(resource_fields)
+    @token_required
     def get(self):
         try:
             args = vial_get_args.parse_args()
@@ -50,6 +53,7 @@ class VialResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def put(self):
         try:
             args = vial_put_args.parse_args()
@@ -59,6 +63,7 @@ class VialResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def patch(self):
         try:
             args = vial_patch_args.parse_args()
@@ -68,11 +73,15 @@ class VialResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def delete(self):
         try:
-            args = vial_del_args.parse_args()
-            data_handler.remove_space(args)
-            delete_vial(args)
+            if data_handler.check_if_admin(request.headers['x-access-token']):
+                args = vial_del_args.parse_args()
+                data_handler.remove_space(args)
+                delete_vial(args)
+            else:
+                abort(403, message="Forbidden.")
             return {"message": "Deleted from database"}, 204
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")

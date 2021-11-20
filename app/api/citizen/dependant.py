@@ -1,7 +1,9 @@
+from flask import request
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from datetime import datetime
 from . import dependant_api
 from ..database_models import Citizen
+from ..decorator import token_required
 from .. import data_handler, sms_handler
 from app import db
 
@@ -76,6 +78,7 @@ resource_fields = {
 # Class to handle methods related to dependants
 class DependantResource(Resource):
     @marshal_with(resource_fields)
+    @token_required
     def get(self):
         try:
             args = dependant_get_args.parse_args()
@@ -84,6 +87,7 @@ class DependantResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def put(self):
         try:
             args = dependant_put_args.parse_args()
@@ -93,6 +97,7 @@ class DependantResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def patch(self):
         try:
             args = dependant_patch_args.parse_args()
@@ -102,12 +107,16 @@ class DependantResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def delete(self):
         try:
-            args = dependant_del_args.parse_args()
-            data_handler.clean_data(args)
-            delete_dependant(args)
-            return {"message": "Deleted from database"}, 204
+            if data_handler.check_if_admin(request.headers['x-access-token']):
+                args = dependant_del_args.parse_args()
+                data_handler.clean_data(args)
+                delete_dependant(args)
+                return {"message": "Deleted from database"}, 204
+            else:
+                abort(403, message="Forbidden.")
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 

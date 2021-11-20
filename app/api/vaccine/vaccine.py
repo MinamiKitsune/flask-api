@@ -1,6 +1,8 @@
+from flask import request
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from . import vaccine_api
 from ..database_models import Vaccine
+from ..decorator import token_required
 from .. import data_handler
 from app import db
 
@@ -59,6 +61,7 @@ resource_fields = {
 # This class will handle all of the methods related to the the vaccines
 class VaccineResource(Resource):
     @marshal_with(resource_fields)
+    @token_required
     def get(self):
         try:
             args = vaccine_get_args.parse_args()
@@ -70,6 +73,7 @@ class VaccineResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def put(self):
         try:
             args = vaccine_put_args.parse_args()
@@ -84,6 +88,7 @@ class VaccineResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def patch(self):
         try:
             args = vaccine_patch_args.parse_args()
@@ -93,11 +98,15 @@ class VaccineResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def delete(self):
         try:
-            args = vaccine_patch_args.parse_args()
-            data_handler.clean_data(args)
-            delete_vaccine(args)
+            if data_handler.check_if_admin(request.headers['x-access-token']):
+                args = vaccine_patch_args.parse_args()
+                data_handler.clean_data(args)
+                delete_vaccine(args)
+            else:
+                abort(403, message="Forbidden.")
             return {"message": "Deleted from database"}, 204
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")

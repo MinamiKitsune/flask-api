@@ -1,7 +1,9 @@
+from flask import request
 from flask_restful import Resource, reqparse, abort, fields, marshal_with
 from datetime import datetime
 from . import citizen_api
 from ..database_models import Citizen
+from ..decorator import token_required
 from .. import data_handler, sms_handler
 from app import db
 
@@ -71,14 +73,19 @@ resource_fields = {
 # Class to handle methods related to citizens
 class CitizenResource(Resource):
     @marshal_with(resource_fields)
+    @token_required
     def get(self):
         try:
-            args = citizen_get_args.parse_args()
-            data_handler.clean_data(args)
-            return get_citizen(args), 200
+            if data_handler.check_if_admin(request.headers['x-access-token']):
+                args = citizen_get_args.parse_args()
+                data_handler.clean_data(args)
+                return get_citizen(args), 200
+            else:
+                abort(403, message="Forbidden.")
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def put(self):
         try:
             args = citizen_put_args.parse_args()
@@ -88,6 +95,7 @@ class CitizenResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def patch(self):
         try:
             args = citizen_patch_args.parse_args()
@@ -97,6 +105,7 @@ class CitizenResource(Resource):
         except Exception:
             abort(500, message="An internal server error has occurred, please try again later.")
 
+    @token_required
     def delete(self):
         try:
             args = citizen_del_args.parse_args()
