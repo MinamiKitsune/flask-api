@@ -33,6 +33,7 @@ def remove_upper(args):
             args[x] = str(args[x]).lower()
 
 
+# Checks if the token public_id is that of an admin and returns true if it is
 def check_if_admin(token):
     data = jwt.decode(token, app.config['SECRET_KEY'])
     result = User.query.filter_by(public_id=data["public_id"]).first()

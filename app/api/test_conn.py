@@ -11,12 +11,14 @@ class TestConnection(Resource):
         return {"response": "successful"}, 200
 
 
+# This class is used to check if the connection works after a token is supplied
 class TestAuthorisation(Resource):
     @token_required
     def get(self):
         return {"response": "successful"}, 200
 
 
+# This class is sued to check if the connection is allowed for an admin after a token is supplied
 class TestAdmin(Resource):
     @token_required
     def get(self):

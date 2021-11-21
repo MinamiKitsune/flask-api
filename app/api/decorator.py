@@ -3,7 +3,7 @@ from flask import request
 import jwt
 from .. import app
 
-
+# Create the decorator to check if the token is passed in the header
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):

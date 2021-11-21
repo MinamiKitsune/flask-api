@@ -35,6 +35,7 @@ class LoginResource(Resource):
         abort(400, message="Login details are wrong.")
 
 
+# This class is used to add a user to the database
 class UserResource(Resource):
     def put(self):
         args = user_put_args.parse_args()
@@ -43,6 +44,7 @@ class UserResource(Resource):
         return {"message": "Added to database"}, 201
 
 
+# This class is used by admins to add admins to the database
 class AdminResource(Resource):
     @token_required
     def put(self):
@@ -61,6 +63,7 @@ user_api.add_resource(AdminResource, "/admin")
 user_api.add_resource(UserResource, '')
 
 
+# Ads a user to the database depending on if they are a normal user or admin
 def add_user(args, user_class):
     result = User.query.filter_by(username=args["username"]).first()
     if result:
