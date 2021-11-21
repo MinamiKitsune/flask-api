@@ -69,12 +69,23 @@ def add_user(args, user_class):
     if result:
         abort(409, message="A user with this username already exists")
     else:
+        unique_id = create_unique_id()
         hashed_password = generate_password_hash(args['password'], method='sha256')
         if user_class == "admin":
-            new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password,
+            new_user = User(public_id=unique_id, username=args['username'], password=hashed_password,
                             admin=True)
         else:
-            new_user = User(public_id=str(uuid.uuid4()), username=args['username'], password=hashed_password,
+            new_user = User(public_id=unique_id, username=args['username'], password=hashed_password,
                             admin=False)
         db.session.add(new_user)
         db.session.commit()
+
+
+# Creates a unique identifier for a user's public id
+def create_unique_id():
+    unique = str(uuid.uuid4())
+    result = User.query.filter_by(public_id=unique).first()
+    if result:
+        return create_unique_id()
+    else:
+        return unique
