@@ -8,6 +8,7 @@ flask = "*"
 sqlalchemy = "*"
 flask-restful = "*"
 flask-sqlalchemy = "*"
+requests = "*"
 
 [dev-packages]
 
